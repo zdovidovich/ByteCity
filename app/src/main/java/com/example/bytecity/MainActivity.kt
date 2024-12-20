@@ -15,11 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.bytecity.Navigation.MainNavDrawer
+import com.example.bytecity.Navigation.Navigation
 import com.example.bytecity.model.DbConn
 import com.example.bytecity.model.ScreenWithModalNavigationDrawer
 import com.example.bytecity.ui.theme.ByteCityTheme
-import com.example.bytecity.view.Navigation.MainNavDrawer
-import com.example.bytecity.view.Navigation.Navigation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -44,6 +44,8 @@ class MainActivity : ComponentActivity() {
 
                     Log.d("BackStackLog", "BackStack: $routes")
                 }
+
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -52,19 +54,16 @@ class MainActivity : ComponentActivity() {
                     lifecycleScope.launch(Dispatchers.IO) {
                         DbConn.connect(this@MainActivity)
                     }
-//
                     if(currentRoute == null || currentRoute in ScreenWithModalNavigationDrawer.AllScreens.list)
                     {
                         MainNavDrawer(drawerState, navController){
-                            navController, drawerState -> Navigation(navController = navController, drawerState)
+                            navController, drawerState -> Navigation(navController = navController, drawerState = drawerState, context = this)
                         }
                     }
                     else{
-                        Navigation(navController = navController, drawerState = drawerState)
+                        Navigation(navController = navController, drawerState = drawerState, context = this)
                     }
 
-
-//                    MakeReviewPage(idProduct = 1, navHostController=navController)
 
                 }
             }

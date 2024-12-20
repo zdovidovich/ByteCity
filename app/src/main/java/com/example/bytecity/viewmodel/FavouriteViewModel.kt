@@ -52,7 +52,7 @@ class FavouriteViewModel : ViewModel() {
 
                 val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
                 val rdate = formatter.parse(resultSetProduct.getDate("releaseDate").toString())
-                val product: Product = Product(
+                val product = Product(
                     idProduct = id,
                     brand = resultSetProduct.getString("brand"),
                     model = resultSetProduct.getString("model"),
@@ -83,10 +83,20 @@ class FavouriteViewModel : ViewModel() {
 
     }
 
+    fun deleteProduct(product:Product){
+        val newProducts = _favouriteState.value.products - product
+        _favouriteState.value = _favouriteState.value.copy(
+            products = newProducts
+        )
+    }
+
+
+
+
 
     data class FavouriteState(
         var loading: Boolean = true,
         var error: String? = null,
-        var products: MutableList<Product> = mutableListOf()
+        var products: List<Product> = listOf()
     )
 }

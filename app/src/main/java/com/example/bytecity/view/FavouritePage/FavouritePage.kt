@@ -24,9 +24,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,7 +44,8 @@ import kotlinx.coroutines.launch
 fun FavouritePreScreen(
     scope: CoroutineScope,
     drawerState: DrawerState,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    idProductToDelete: Product?
 ) {
     val favouriteViewModel: FavouriteViewModel = viewModel()
     val viewState by favouriteViewModel.favouriteState
@@ -62,11 +61,15 @@ fun FavouritePreScreen(
             }
 
             else -> {
+                if(idProductToDelete != null){
+                    favouriteViewModel.deleteProduct(product = idProductToDelete)
+                }
                 FavouritePage(
                     products = viewState.products,
                     scope = scope,
                     drawerState = drawerState,
-                    navHostController = navHostController
+                    navHostController = navHostController,
+                    favouriteViewModel = favouriteViewModel
                 )
             }
         }
@@ -79,7 +82,8 @@ fun FavouritePage(
     products: List<Product>,
     scope: CoroutineScope,
     drawerState: DrawerState,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    favouriteViewModel: FavouriteViewModel
 ) {
 
 
@@ -87,9 +91,6 @@ fun FavouritePage(
         SnackbarHostState()
     }
 
-    var newProducts by remember {
-        mutableStateOf(products)
-    }
 
     Scaffold(modifier = Modifier.padding(8.dp),
         topBar = {
@@ -113,8 +114,7 @@ fun FavouritePage(
     ) {
         Column(modifier=Modifier.fillMaxSize().padding(it)) {
             Text("Избранное", fontSize = 30.sp)
-//            Spacer(modifier = Modifier.padding(4.dp))
-            if (newProducts.isEmpty()) {
+            if (products.isEmpty()) {
                 Row(
                     modifier = Modifier
                         .padding(it)
@@ -128,15 +128,14 @@ fun FavouritePage(
                 LazyVerticalGrid(
                     GridCells.Fixed(2), modifier = Modifier
                         .fillMaxSize()
-//                        .padding(it)
                 ) {
-                    items(newProducts) { product ->
+                    items(products) { product ->
                         ProductItemPreScreen(
                             product = product,
                             navHostController = navHostController,
                             snackbarHostState = snackbarHostState
                         ) {
-                            newProducts = newProducts - product
+                            favouriteViewModel.deleteProduct(product)
                         }
                     }
                 }

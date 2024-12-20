@@ -10,18 +10,15 @@ import com.example.bytecity.model.Db
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class CartViewModel : ViewModel() {
 
     private val _cartState = mutableStateOf(CartState())
     val cartState: State<CartState> = _cartState
 
-    init {
+    init{
         getProductsFromCart()
     }
-
 
     private fun getProductsFromCart() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -58,19 +55,7 @@ class CartViewModel : ViewModel() {
                         resultSetDiscount.close()
                     }
 
-
-                    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-                    val rdate = formatter.parse(resultSetProduct.getDate("releaseDate").toString())
-                    val product = Product(
-                        idProduct = id,
-                        brand = resultSetProduct.getString("brand"),
-                        model = resultSetProduct.getString("model"),
-                        type = resultSetProduct.getString("type"),
-                        price =  String.format("%.2f", resultSetProduct.getDouble("price") * (1 - discountValue)).replace(",", ".").toDouble(),
-                        imageProduct = resultSetProduct.getString("imageProduct"),
-                        inStock = inStock,
-                        releaseDate = rdate!!
-                    )
+                    val product = Product.parse(resultSetProduct, discountValue)
                     val productForCart =
                         ProductForCart(product, resultSetProductIds.getInt("quantity"))
                     productsInWishList.add(productForCart)
@@ -95,15 +80,51 @@ class CartViewModel : ViewModel() {
     fun cleanCart() {
         viewModelScope.launch(Dispatchers.IO) {
             Db.cleanCart()
+            _cartState.value = _cartState.value.copy(
+                products = listOf()
+            )
         }
         //TODO MAYBE ADD TRY EXCEPT????
     }
+
+    fun plusProduct(product: ProductForCart){
+        val editedProductForCart = _cartState.value.products.find { it.product.idProduct == product.product.idProduct }
+        editedProductForCart?.let {
+            val updatedProductForCart = it.copy(qty = it.qty + 1)
+            val newProductsForCart =
+                _cartState.value.products.map { productForCart -> if (productForCart.product.idProduct == updatedProductForCart.product.idProduct) updatedProductForCart else productForCart }
+            _cartState.value = _cartState.value.copy(
+                products = newProductsForCart
+            )
+        }
+    }
+
+    fun minusProduct(product: ProductForCart){
+        val editedProductForCart = _cartState.value.products.find { it.product.idProduct == product.product.idProduct }
+        editedProductForCart?.let {
+            val updatedProductForCart = it.copy(qty = it.qty - 1)
+            val newProductsForCart =
+                _cartState.value.products.map { productForCart -> if (productForCart.product.idProduct == updatedProductForCart.product.idProduct) updatedProductForCart else productForCart }
+            _cartState.value = _cartState.value.copy(
+                products = newProductsForCart
+            )
+        }
+    }
+
+    fun deleteProduct(product: ProductForCart){
+        val newProducts = _cartState.value.products - product
+        _cartState.value = _cartState.value.copy(
+            products = newProducts
+        )
+    }
+
+
 
 
     data class CartState(
         var loading: Boolean = true,
         var error: String? = null,
-        var products: MutableList<ProductForCart> = mutableListOf()
+        var products: List<ProductForCart> = listOf()
     )
 
 

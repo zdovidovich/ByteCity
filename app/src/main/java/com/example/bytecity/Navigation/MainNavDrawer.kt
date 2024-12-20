@@ -1,4 +1,4 @@
-package com.example.bytecity.view.Navigation
+package com.example.bytecity.Navigation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

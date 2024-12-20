@@ -11,16 +11,13 @@ class MakeReviewViewModel : ViewModel() {
         idProduct: Int,
         rating: Float, text: String
     ): Int {
-        return try{
-//            viewModelScope.launch(Dispatchers.IO) {
-            withContext(Dispatchers.IO){
+        return try {
+            withContext(Dispatchers.IO) {
                 Db.uploadReview(idProduct, rating, text)
-//         }
-         }
+            }
             200
-        }
-        catch (ex:Exception){
-         1
+        } catch (ex: Exception) {
+            1
         }
     }
 }

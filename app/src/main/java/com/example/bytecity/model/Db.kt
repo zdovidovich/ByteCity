@@ -174,6 +174,16 @@ class Db {
             return statement.executeQuery()
         }
 
+        fun getProducts(
+            connection: DbConnection = DbConn,
+            category: String, limit:Int, offset:Int): ResultSet {
+            val query = "SELECT * FROM Product WHERE type = ? AND inStock > 0 LIMIT $limit OFFSET $offset"
+            val statement = connection.connection.prepareStatement(query).apply {
+                setString(1, category)
+            }
+            return statement.executeQuery()
+        }
+
         fun getRating(product: Product): ResultSet {
             val query = "SELECT SUM(rating) / COUNT(rating) AS res FROM Review WHERE idProduct = ?"
             val statement = DbConn.connection.prepareStatement(query).apply {
@@ -221,6 +231,15 @@ class Db {
         fun getProductById(id: Int): ResultSet {
             val query = "SELECT * FROM Product WHERE idProduct = ?"
             val statement = DbConn.connection.prepareStatement(query).apply {
+                setInt(1, id)
+            }
+            return statement.executeQuery()
+        }
+
+
+        fun getProductById(id: Int, limit:Int, offset:Int, connection: DbConnection = DbConn): ResultSet {
+            val query = "SELECT * FROM Product WHERE idProduct = ? LIMIT $limit OFFSET $offset"
+            val statement = connection.connection.prepareStatement(query).apply {
                 setInt(1, id)
             }
             return statement.executeQuery()
@@ -342,6 +361,16 @@ class Db {
             return statementFirst.executeQuery()
         }
 
+        fun getOrdersId(limit:Int, offset:Int, connection: DbConnection = DbConn): ResultSet {
+            val queryFirst = "SELECT idOrder FROM UserOrder where idUser = ? LIMIT $limit OFFSET $offset"
+            val statementFirst = connection.connection.prepareStatement(queryFirst).apply {
+                setInt(1, User.Id.id)
+            }
+            return statementFirst.executeQuery()
+        }
+
+
+
         fun getOrderDetails(
             idOrders: ResultSet
         ): List<ResultSet> {
@@ -349,6 +378,22 @@ class Db {
             while (idOrders.next()) {
                 val query = "SELECT * FROM OrderDetails WHERE idOrder = ?"
                 val statement = DbConn.connection.prepareStatement(query).apply {
+                    setInt(1, idOrders.getInt("idOrder"))
+                }
+                res.add(statement.executeQuery())
+            }
+            return res
+        }
+
+        fun getOrderDetails(
+            idOrders: ResultSet,
+            limit:Int, offset:Int,
+            connection: DbConnection = DbConn
+        ): List<ResultSet> {
+            val res: MutableList<ResultSet> = mutableListOf()
+            while (idOrders.next()) {
+                val query = "SELECT * FROM OrderDetails WHERE idOrder = ? LIMIT $limit OFFSET $offset"
+                val statement = connection.connection.prepareStatement(query).apply {
                     setInt(1, idOrders.getInt("idOrder"))
                 }
                 res.add(statement.executeQuery())
@@ -370,13 +415,40 @@ class Db {
             return res
         }
 
-        fun getProductsBySearching(text: String): ResultSet {
-            val query = "SELECT * FROM Product WHERE CONCAT_WS(' ', brand, model) LIKE ? LIMIT 7"
-            val statement = DbConn.connection.prepareStatement(query).apply {
+        fun getOrderProducts(
+            idOrders: ResultSet,
+            limit:Int, offset:Int,
+            connection: DbConnection = DbConn
+        ): List<ResultSet> {
+            val res = mutableListOf<ResultSet>()
+            while (idOrders.next()) {
+                val query = "SELECT * FROM OrderProduct WHERE idOrder = ? LIMIT $limit OFFSET $offset"
+                val statement = connection.connection.prepareStatement(query).apply {
+                    setInt(1, idOrders.getInt("idOrder"))
+                }
+                res.add(statement.executeQuery())
+            }
+            return res
+        }
+
+
+        fun getProductsBySearching(text: String, connection: DbConnection = DbConn): ResultSet {
+            val query = "SELECT * FROM Product WHERE CONCAT_WS(' ', brand, model) LIKE ?"
+            val statement = connection.connection.prepareStatement(query).apply {
                 setString(1, "%$text%")
             }
             return statement.executeQuery()
         }
+
+        fun getProductsBySearching(text: String, connection: DbConnection = DbConn, limit:Int, offset:Int): ResultSet {
+            val query = "SELECT * FROM Product WHERE CONCAT_WS(' ', brand, model) LIKE ? LIMIT $limit OFFSET $offset"
+            Log.d("aaaaaaaa",query)
+            val statement = connection.connection.prepareStatement(query).apply {
+                setString(1, "%$text%")
+            }
+            return statement.executeQuery()
+        }
+
 
         fun getInfoDiscount(idDiscount: Int):ResultSet{
             val query = "SELECT * FROM Discount WHERE idDiscount = ?"
@@ -385,6 +457,16 @@ class Db {
             }
             return statement.executeQuery()
         }
+
+
+        fun getInfoDiscount(idDiscount: Int, limit:Int, offset:Int, connection: DbConnection = DbConn):ResultSet{
+            val query = "SELECT * FROM Discount WHERE idDiscount = ? LIMIT $limit OFFSET $offset"
+            val statement = connection.connection.prepareStatement(query).apply {
+                setInt(1, idDiscount)
+            }
+            return statement.executeQuery()
+        }
+
 
         fun getReviews(idProduct:Int):ResultSet{
             val query = "SELECT * FROM Review WHERE idProduct = ?"

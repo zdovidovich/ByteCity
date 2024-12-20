@@ -1,4 +1,4 @@
-package com.example.bytecity.view.makeOrderPage
+package com.example.bytecity.view.MakeOrderPage
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,6 +46,7 @@ import com.example.bytecity.view.CartPage.CartProductItem
 import com.example.bytecity.view.MainComposables.TopBar
 import com.example.bytecity.viewmodel.MakeOrderViewModel
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 
 @Composable
@@ -155,7 +156,7 @@ fun makeOrderPage(
                 item {
                     Spacer(modifier = Modifier.padding(vertical = 8.dp))
                     val price =
-                        productsForCart.fold(0.0) { acc, productForCart -> acc + productForCart.product.price * productForCart.qty }
+                        (productsForCart.fold(0.0) { acc, productForCart -> acc + productForCart.product.price * productForCart.qty } * 100).roundToInt() / 100.0
                     Text("Итого $price BYN", fontSize = 20.sp)
                 }
                 item {

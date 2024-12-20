@@ -27,9 +27,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,9 +47,11 @@ import kotlinx.coroutines.launch
 fun CartPreScreen(
     scope: CoroutineScope,
     drawerState: DrawerState,
-    navHostController: NavHostController
-) {
+    navHostController: NavHostController,
+
+    ) {
     val cartViewModel: CartViewModel = viewModel()
+
     val viewState by cartViewModel.cartState
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -90,9 +90,6 @@ fun CartPage(
         SnackbarHostState()
     }
 
-    var newProducts by remember {
-        mutableStateOf(products)
-    }
 
     Scaffold(modifier = Modifier.padding(8.dp),
         topBar = {
@@ -110,7 +107,6 @@ fun CartPage(
                     colors = ButtonDefaults.buttonColors(containerColor = MainColor.AppColor.value),
                     onClick = {
                         cartViewModel.cleanCart()
-                        newProducts = listOf()
                     }) {
                     Text("Очистить корзину")
                 }
@@ -120,8 +116,19 @@ fun CartPage(
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MainColor.AppColor.value),
                     onClick = {
-                        navHostController.currentBackStackEntry?.savedStateHandle?.set("productsforcart", newProducts)
-                        navHostController.navigate(Screens.MakeOrderPage.route)
+                        if (products.isNotEmpty()) {
+                            navHostController.currentBackStackEntry?.savedStateHandle?.set(
+                                "productsforcart",
+                                products
+                            )
+                            navHostController.navigate(Screens.MakeOrderPage.route)
+                        } else {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = "Нечего заказывать :)"
+                                )
+                            }
+                        }
                     }) {
                     Text("Заказать")
                 }
@@ -146,7 +153,7 @@ fun CartPage(
                 .padding(it)
         ) {
             Text("Корзина", fontSize = 30.sp)
-            if (newProducts.isEmpty()) {
+            if (products.isEmpty()) {
                 Row(
                     modifier = Modifier
                         .padding(it)
@@ -162,31 +169,19 @@ fun CartPage(
                         .fillMaxSize()
 //                        .padding(it)
                 ) {
-                    items(newProducts) { product ->
+                    items(products) { product ->
                         CartProductItem(
                             productForCart = product,
                             navHostController = navHostController,
                             snackbarHostState = snackbarHostState,
                             onPlusOneProduct = {
-                                val editedProductForCart =
-                                    newProducts.find { it.product.idProduct == product.product.idProduct }
-                                editedProductForCart?.let {
-                                    val updatedProductForCart = it.copy(qty = it.qty + 1)
-                                    newProducts =
-                                        newProducts.map { productForCart -> if (productForCart.product.idProduct == updatedProductForCart.product.idProduct) updatedProductForCart else productForCart }
-                                }
+                                cartViewModel.plusProduct(product = product)
                             },
                             onMinusOneProduct = {
-                                val editedProductForCart =
-                                    newProducts.find { it.product.idProduct == product.product.idProduct }
-                                editedProductForCart?.let {
-                                    val updatedProductForCart = it.copy(qty = it.qty - 1)
-                                    newProducts =
-                                        newProducts.map { productForCart -> if (productForCart.product.idProduct == updatedProductForCart.product.idProduct) updatedProductForCart else productForCart }
-                                }
+                                cartViewModel.minusProduct(product = product)
                             },
                             onDeleteProduct = {
-                                    newProducts = newProducts - product
+                                cartViewModel.deleteProduct(product = product)
                                 scope.launch {
                                     snackbarHostState.currentSnackbarData?.dismiss()
                                     snackbarHostState.showSnackbar(

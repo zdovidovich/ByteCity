@@ -141,6 +141,7 @@ fun ProductPage(
                                 when (productPageViewModel.addWishList(product)) {
                                     1 -> {
                                         favouriteString = "В избранное"
+                                        navHostController.previousBackStackEntry?.savedStateHandle?.set("producttofavourite", product)
                                         snackbarHostState.currentSnackbarData?.dismiss()
                                         snackbarHostState.showSnackbar(
                                             "Удалено из избранного",

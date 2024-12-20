@@ -41,7 +41,6 @@ class MakeOrderViewModel : ViewModel() {
                             date = Date.valueOf(LocalDate.now().toString()),
                             connection = connection
                         )
-//
                         connection.connection.autoCommit = true
                         connection.connection.transactionIsolation =
                             Connection.TRANSACTION_READ_COMMITTED

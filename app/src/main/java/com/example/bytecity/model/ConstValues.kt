@@ -3,8 +3,8 @@ package com.example.bytecity.model
 import androidx.compose.ui.graphics.Color
 
 sealed class User(var id: Int, var login: String, var email: String, var contactNumber: String) {
-    data object Id : User(1, "F0ra1n", "dov@gmail.com", "+375292391658")
-//    data object Id : User(-1, "", "", "")
+//    data object Id : User(1, "F0ra1n", "dov@gmail.com", "+375292391658")
+    data object Id : User(-1, "", "", "")
 
 
     fun exit() {

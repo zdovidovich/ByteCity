@@ -1,6 +1,6 @@
-package com.example.bytecity.view.Navigation
+package com.example.bytecity.Navigation
 
-import android.util.Log
+import android.content.Context
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -13,24 +13,24 @@ import com.example.bytecity.businessClasses.ProductForCart
 import com.example.bytecity.model.Category
 import com.example.bytecity.model.Screens
 import com.example.bytecity.view.AccountPage.AccountPage
-import com.example.bytecity.view.AllOrderPage.AllOrderPreScreen
+import com.example.bytecity.view.AllOrderPage.AllOrderPage
 import com.example.bytecity.view.CartPage.CartPreScreen
 import com.example.bytecity.view.CategoryPage.CategoryList
 import com.example.bytecity.view.FavouritePage.FavouritePreScreen
-import com.example.bytecity.view.ListProductsPage.ListProductPreScreen
+import com.example.bytecity.view.ListProductsPage.ListProductPage
 import com.example.bytecity.view.LoginAndRegistrationPages.LoginPage
 import com.example.bytecity.view.LoginAndRegistrationPages.RegistrationPage
 import com.example.bytecity.view.MainComposables.MainContentPage
+import com.example.bytecity.view.MakeOrderPage.makeOrderPage
 import com.example.bytecity.view.MakeReviewPage.MakeReviewPage
 import com.example.bytecity.view.OrderPage.OrderPage
 import com.example.bytecity.view.ProductPage.ProductPreScreen
 import com.example.bytecity.view.ReviewPage.ReviewPreScreen
 import com.example.bytecity.view.SearchPage.SearchPage
-import com.example.bytecity.view.makeOrderPage.makeOrderPage
 import java.util.Date
 
 @Composable
-fun Navigation(navController: NavHostController, drawerState: DrawerState) {
+fun Navigation(navController: NavHostController, drawerState: DrawerState, context:Context) {
     val scope = rememberCoroutineScope()
     NavHost(navController = navController, startDestination = Screens.MainContentScreens.route) {
         composable(route = Screens.MainContentScreens.route) {
@@ -40,9 +40,6 @@ fun Navigation(navController: NavHostController, drawerState: DrawerState) {
                 drawerState = drawerState
             )
         }
-//        composable(route = Screens.AboutUsScreens.route) {
-//            AboutUsPage(scope = scope, drawerState = drawerState)
-//        }
         composable(route = Screens.LoginScreens.route) {
             LoginPage(navController = navController)
         }
@@ -64,7 +61,13 @@ fun Navigation(navController: NavHostController, drawerState: DrawerState) {
             val category =
                 navController.previousBackStackEntry?.savedStateHandle?.get<String>("catPage")
                     ?: Category.MainList.categories["Телефоны"]!!
-            ListProductPreScreen(
+//            ListProductPreScreen(
+//                type = category,
+//                scope = scope,
+//                drawerState = drawerState,
+//                navHostController = navController
+//            )
+            ListProductPage(
                 type = category,
                 scope = scope,
                 drawerState = drawerState,
@@ -75,25 +78,22 @@ fun Navigation(navController: NavHostController, drawerState: DrawerState) {
             val product =
                 navController.previousBackStackEntry?.savedStateHandle?.get<Product>("product")
             if (product == null) {
-//                navController.navigate(Screens.MainContentScreens.route) {
-//                    popUpTo(Screens.MainContentScreens.route) {
-//                        inclusive = true
-//                    }
-//                }
-            navController.navigateUp()
-            //TODO but i don't know how (smth's wrong with navigation)
+                navController.navigateUp()
+                //TODO but i don't know how (smth's wrong with navigation)
             } else {
                 ProductPreScreen(product = product, navHostController = navController)
             }
         }
         composable(route = Screens.FavouriteProductScreens.route) {
+            val productToDelete = navController.currentBackStackEntry?.savedStateHandle?.get<Product>("producttofavourite")
             FavouritePreScreen(
                 scope = scope,
                 drawerState = drawerState,
-                navHostController = navController
+                navHostController = navController,
+                idProductToDelete = productToDelete
             )
         }
-        composable(route = Screens.CartProductScreens.route) {
+        composable(route = Screens.CartProductScreens.route) { entry ->
             CartPreScreen(
                 scope = scope,
                 drawerState = drawerState,
@@ -110,11 +110,7 @@ fun Navigation(navController: NavHostController, drawerState: DrawerState) {
             makeOrderPage(navHostController = navController, productsForCart = products)
         }
         composable(route = Screens.AllOrderPage.route) {
-            AllOrderPreScreen(
-                navHostController = navController,
-                drawerState = drawerState,
-                scope = scope
-            )
+            AllOrderPage(drawerState = drawerState, scope = scope, navHostController = navController)
         }
         composable(route = Screens.OrderPage.route) {
             val order = navController.previousBackStackEntry?.savedStateHandle?.get<Order>("order")
@@ -129,11 +125,6 @@ fun Navigation(navController: NavHostController, drawerState: DrawerState) {
                 ?.savedStateHandle
                 ?.get<Int>("productsforreview")
             if (product == null) {
-//                navController.navigate(Screens.MainContentScreens.route) {
-//                    popUpTo(Screens.MainContentScreens.route) {
-//                        inclusive = true
-//                    }
-//                }
                 navController.navigateUp()
                 //TODO but i don't know how (smth's wrong with navigation)
             } else {
@@ -141,7 +132,6 @@ fun Navigation(navController: NavHostController, drawerState: DrawerState) {
             }
         }
         composable(route = Screens.MakeReviewPage.route) {
-            Log.d("aaaaaaaaaaaaaaaaaaaaaaaaaaa", "222222222222222222222222222222")
             val productForMakeReview =
                 navController.previousBackStackEntry?.savedStateHandle?.get<Int>("productformakereview")
             if (productForMakeReview == null) {

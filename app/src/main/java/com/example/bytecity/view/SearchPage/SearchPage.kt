@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -18,19 +20,25 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.bytecity.model.MainColor
 import com.example.bytecity.view.ListProductsPage.ProductItemPreScreen
 import com.example.bytecity.view.MainComposables.SearchingTopBar
 import com.example.bytecity.viewmodel.SearchPageViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun SearchPage(navHostController: NavHostController) {
@@ -39,9 +47,9 @@ fun SearchPage(navHostController: NavHostController) {
     }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    Scaffold(modifier = Modifier.padding(8.dp),
+    Scaffold(modifier = Modifier.fillMaxSize().padding(8.dp),
         topBar = {
-            SearchingTopBar(text=text) {
+            SearchingTopBar(text = text) {
                 IconButton(onClick = { navHostController.navigateUp() }) {
                     Icon(Icons.Filled.ArrowBack, "Назад")
                 }
@@ -59,44 +67,67 @@ fun SearchPage(navHostController: NavHostController) {
             }
         }
     ) {
-        val searchPageViewModel: SearchPageViewModel = viewModel()
-        searchPageViewModel.findProducts(text.value)
-        val viewState by searchPageViewModel.searchState
+        val viewModel: SearchPageViewModel = viewModel()
+        val context = LocalContext.current
+        LaunchedEffect(text.value) {
+            viewModel.getProducts(text.value, context)
+        }
+
+        val products = viewModel.pager.collectAsLazyPagingItems()
+        val listState = rememberLazyGridState()
+        val scope = rememberCoroutineScope()
+
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
         ) {
             when {
-                viewState.loading -> {
+                products.loadState.refresh is LoadState.Loading -> {
                     CircularProgressIndicator(Modifier.align(Alignment.Center))
                 }
 
-                !viewState.error.isNullOrEmpty() -> {
-                    Text(text = viewState.error.toString())
+                products.loadState.refresh is LoadState.Error -> {
+                    Text(text = "Ошибка, повторите позже")
                 }
 
                 text.value.isEmpty() -> {
                     Text(text = "Введите что-нибудь в поисковике :)")
                 }
 
-                viewState.products.isEmpty() -> {
+                products.itemCount == 0 -> {
                     Text("Ничего не найдено")
                 }
+
                 else -> {
                     LazyVerticalGrid(
+                        state = listState,
                         columns = GridCells.Fixed(2), modifier = Modifier
                             .fillMaxSize()
-                            .padding(it)
                     ) {
-                        items(viewState.products) { product ->
+                        items(products.itemCount) { index ->
                             ProductItemPreScreen(
-                                product = product,
+                                product = products[index]!!,
                                 navHostController = navHostController,
                                 snackbarHostState = snackbarHostState
                             )
                         }
                     }
+                    FloatingActionButton(
+                        onClick = {
+                            scope.launch {
+                                listState.scrollToItem(0)
+                            }
+                        }, modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(16.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                        containerColor = MainColor.AppColor.value
+                    ) {
+                        Icon(Icons.Filled.KeyboardArrowUp, "Наверх", tint = Color.White)
+                    }
+
                 }
             }
         }

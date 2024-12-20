@@ -1,10 +1,8 @@
 package com.example.bytecity.view.AllOrderPage
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
@@ -14,14 +12,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.bytecity.businessClasses.Order
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.bytecity.view.MainComposables.TopBar
 import com.example.bytecity.viewmodel.AllOrderPageViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -29,41 +28,18 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun AllOrderPreScreen(
+fun AllOrderPage(
     drawerState: DrawerState,
     scope: CoroutineScope,
     navHostController: NavHostController
 ) {
-    val allOrderPageViewModel: AllOrderPageViewModel = viewModel()
-    val viewState by allOrderPageViewModel.orderState
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        when {
-            viewState.loading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-
-            !viewState.error.isNullOrEmpty() -> {
-                Text(viewState.error!!, fontSize = 20.sp)
-            }
-
-            else -> {
-                AllOrderPage(viewState.orders, drawerState, scope, navHostController)
-            }
-        }
+    val viewModel: AllOrderPageViewModel = viewModel()
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.findProducts(context)
     }
 
-}
-
-
-@Composable
-fun AllOrderPage(
-    orders: List<Order>,
-    drawerState: DrawerState,
-    scope: CoroutineScope,
-    navHostController: NavHostController
-) {
+    val orders = viewModel.pager.collectAsLazyPagingItems()
 
     Scaffold(modifier = Modifier.padding(8.dp),
         topBar = {
@@ -77,20 +53,27 @@ fun AllOrderPage(
         }
     ) {
         Text("Заказы", fontSize = 26.sp)
-        LazyColumn(
-            modifier = Modifier
-            .fillMaxSize()
-            .padding(it)) {
-            items(orders) { order ->
-                AllOrderItem(order = order, navHostController = navHostController)
+        when (orders.loadState.refresh) {
+            is LoadState.Loading -> {
+                CircularProgressIndicator()
+            }
+
+            is LoadState.Error -> {
+                Text(text = (orders.loadState.refresh as LoadState.Error).error.message!!)
+            }
+
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it)
+                ) {
+                    items(orders.itemCount) { index ->
+                        AllOrderItem(order = orders[index]!!, navHostController = navHostController)
+                    }
+                }
             }
         }
+
     }
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun OrderPagePreview() {
-//    OrderPreScreen()
-//}

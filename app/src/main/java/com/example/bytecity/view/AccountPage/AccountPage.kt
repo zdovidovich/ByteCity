@@ -95,7 +95,6 @@ fun AccountPage(scope:CoroutineScope, drawerState: DrawerState, navHostControlle
                                         inclusive = true
                                     }
                                 }
-//                                TODO NAVIGATE TO SOMETHING
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color.White)
                         ) {
@@ -115,9 +114,7 @@ fun AccountPage(scope:CoroutineScope, drawerState: DrawerState, navHostControlle
                     text = {
                         Text("Вы точно хотите выйти из аккаунта?", color = Color.White)
                     },
-                    containerColor = MainColor.AppColor.value,
-
-                    )
+                    containerColor = MainColor.AppColor.value)
             }
         }
     }
