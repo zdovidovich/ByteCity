@@ -10,7 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -18,8 +18,6 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -43,8 +41,8 @@ import com.example.bytecity.model.MainColor
 import com.example.bytecity.model.Screens
 import com.example.bytecity.model.User
 import com.example.bytecity.view.CartPage.CartProductItem
+import com.example.bytecity.view.MainComposables.MainSnackbar
 import com.example.bytecity.view.MainComposables.TopBar
-import com.example.bytecity.viewmodel.MakeOrderViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -65,20 +63,12 @@ fun makeOrderPage(
                 IconButton(onClick = {
                     navHostController.navigateUp()
                 }) {
-                    Icon(Icons.Filled.ArrowBack, "Назад")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
                 }
             })
         },
         snackbarHost = {
-            SnackbarHost(snackbarHostState) { data ->
-                Snackbar(
-                    snackbarData = data,
-                    containerColor = MainColor.AppColor.value,
-                    contentColor = Color.White,
-                    shape = RoundedCornerShape(8.dp),
-                )
-
-            }
+            MainSnackbar(snackbarHostState = snackbarHostState)
         }
     ) {
         Column(

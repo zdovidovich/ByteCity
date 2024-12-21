@@ -9,16 +9,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,14 +34,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.bytecity.model.MainColor
 import com.example.bytecity.model.Screens
+import com.example.bytecity.view.MainComposables.MainSnackbar
 import com.example.bytecity.view.MainComposables.TopBar
-import com.example.bytecity.viewmodel.LoginViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -51,32 +49,25 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun LoginPage(navController: NavHostController) {
-    val snackboxHostState = remember { SnackbarHostState() }
+    val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         modifier = Modifier.padding(8.dp),
         snackbarHost = {
-            SnackbarHost(snackboxHostState) { data ->
-                Snackbar(
-                    containerColor = Color(0xFF1D5DAA),
-                    contentColor = Color.Black
-                ) {
-                    Text(text = data.visuals.message)
-                }
-            }
+            MainSnackbar(snackbarHostState = snackbarHostState)
         },
         topBar = {
             TopBar {
                 IconButton(onClick = {
                     navController.navigateUp()
                 }) {
-                    Icon(Icons.Filled.ArrowBack, "Назад")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
                 }
             }
         }
 
     ) {
 
-        val loginViewModel = LoginViewModel()
+        val loginViewModel: LoginViewModel = viewModel()
 
         var passwordVisible by remember {
             mutableStateOf(false)
@@ -125,14 +116,22 @@ fun LoginPage(navController: NavHostController) {
             Spacer(modifier = Modifier.padding(8.dp))
             TextField(
                 modifier = Modifier.fillMaxWidth(), value = login,
-                onValueChange = { login = it },
+                onValueChange = {
+                    if (it.length < 21) {
+                        login = it
+                    }
+                },
                 label = { Text("Логин") },
                 colors = textFieldColor,
                 singleLine = true
             )
             Spacer(modifier = Modifier.padding(16.dp))
             TextField(modifier = Modifier.fillMaxWidth(), value = password,
-                onValueChange = { password = it },
+                onValueChange = {
+                    if (it.length < 50) {
+                        password = it
+                    }
+                },
                 label = {
                     Text("Пароль")
                 },
@@ -154,16 +153,18 @@ fun LoginPage(navController: NavHostController) {
                         scopeSnackBar.launch(Dispatchers.IO) {
                             val resCode = loginViewModel.checkData(login, password)
                             if (resCode != 200) {
-                                snackboxHostState.showSnackbar(when(resCode){
-                                    0 -> "Вы ввели пустой логин"
-                                    1 -> "Вы ввели пустой пароль"
-                                    2 -> "Неправильной логин или пароль"
-                                    else -> "Error"
-                                }, duration = SnackbarDuration.Short)
+                                snackbarHostState.showSnackbar(
+                                    when (resCode) {
+                                        0 -> "Вы ввели пустой логин"
+                                        1 -> "Вы ввели пустой пароль"
+                                        2 -> "Неправильной логин или пароль"
+                                        else -> "Error"
+                                    }, duration = SnackbarDuration.Short
+                                )
                             } else {
                                 //TODO
-                                withContext(Dispatchers.Main){
-                                navController.navigateUp()
+                                withContext(Dispatchers.Main) {
+                                    navController.navigateUp()
                                 }
                             }
                         }
@@ -186,12 +187,4 @@ fun LoginPage(navController: NavHostController) {
             }
         }
     }
-
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun LoginPreview() {
-//    LoginPage()
 }

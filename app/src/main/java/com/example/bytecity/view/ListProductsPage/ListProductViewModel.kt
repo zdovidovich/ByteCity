@@ -1,4 +1,4 @@
-package com.example.bytecity.viewmodel
+package com.example.bytecity.view.ListProductsPage
 
 import android.content.Context
 import androidx.lifecycle.ViewModel

@@ -22,9 +22,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
@@ -36,7 +34,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,8 +46,8 @@ import com.example.bytecity.businessClasses.Product
 import com.example.bytecity.model.MainColor
 import com.example.bytecity.model.Screens
 import com.example.bytecity.model.User
+import com.example.bytecity.view.MainComposables.MainSnackbar
 import com.example.bytecity.view.MainComposables.TopBar
-import com.example.bytecity.viewmodel.ProductPageViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -107,15 +104,7 @@ fun ProductPage(
             }
         },
         snackbarHost = {
-            SnackbarHost(snackbarHostState) { data ->
-                Snackbar(
-                    snackbarData = data,
-                    containerColor = MainColor.AppColor.value,
-                    contentColor = Color.White,
-                    shape = RoundedCornerShape(8.dp),
-                )
-
-            }
+            MainSnackbar(snackbarHostState = snackbarHostState)
         },
         bottomBar = {
             Row(

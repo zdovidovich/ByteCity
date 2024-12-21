@@ -36,7 +36,6 @@ import coil.request.ImageRequest
 import com.example.bytecity.R
 import com.example.bytecity.businessClasses.ProductForCart
 import com.example.bytecity.model.Screens
-import com.example.bytecity.viewmodel.CartItemViewModel
 import kotlinx.coroutines.launch
 
 @Composable

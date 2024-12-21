@@ -22,7 +22,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.bytecity.businessClasses.Review
 import com.example.bytecity.view.MainComposables.TopBar
-import com.example.bytecity.viewmodel.ReviewViewModel
 
 
 @Composable

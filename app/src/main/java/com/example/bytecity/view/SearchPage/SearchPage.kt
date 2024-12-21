@@ -8,15 +8,13 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,8 +34,8 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.bytecity.model.MainColor
 import com.example.bytecity.view.ListProductsPage.ProductItemPreScreen
+import com.example.bytecity.view.MainComposables.MainSnackbar
 import com.example.bytecity.view.MainComposables.SearchingTopBar
-import com.example.bytecity.viewmodel.SearchPageViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -51,20 +49,12 @@ fun SearchPage(navHostController: NavHostController) {
         topBar = {
             SearchingTopBar(text = text) {
                 IconButton(onClick = { navHostController.navigateUp() }) {
-                    Icon(Icons.Filled.ArrowBack, "Назад")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
                 }
             }
         },
         snackbarHost = {
-            SnackbarHost(snackbarHostState) { data ->
-                Snackbar(
-                    snackbarData = data,
-                    containerColor = MainColor.AppColor.value,
-                    contentColor = Color.White,
-                    shape = RoundedCornerShape(8.dp),
-                )
-
-            }
+            MainSnackbar(snackbarHostState = snackbarHostState)
         }
     ) {
         val viewModel: SearchPageViewModel = viewModel()

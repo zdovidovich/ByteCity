@@ -1,4 +1,4 @@
-package com.example.bytecity.viewmodel
+package com.example.bytecity.view.LoginAndRegistrationPages
 
 import androidx.lifecycle.ViewModel
 import com.example.bytecity.model.Db

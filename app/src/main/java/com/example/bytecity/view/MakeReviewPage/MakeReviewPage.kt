@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -29,7 +29,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.bytecity.model.MainColor
 import com.example.bytecity.view.MainComposables.TopBar
-import com.example.bytecity.viewmodel.MakeReviewViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -38,7 +37,7 @@ fun MakeReviewPage(
     idProduct:Int,
     navHostController: NavHostController
 ) {
-    val makeReviewViewModel:MakeReviewViewModel = viewModel()
+    val makeReviewViewModel: MakeReviewViewModel = viewModel()
 
 
     Scaffold(modifier = Modifier.padding(8.dp),
@@ -47,7 +46,7 @@ fun MakeReviewPage(
                 IconButton(onClick = {
                     navHostController.navigateUp()
                 }) {
-                    Icon(Icons.Filled.ArrowBack, "Назад")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
                 }
             })
         }

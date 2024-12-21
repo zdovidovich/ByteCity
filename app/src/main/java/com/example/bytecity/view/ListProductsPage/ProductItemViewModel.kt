@@ -1,4 +1,4 @@
-package com.example.bytecity.viewmodel
+package com.example.bytecity.view.ListProductsPage
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf

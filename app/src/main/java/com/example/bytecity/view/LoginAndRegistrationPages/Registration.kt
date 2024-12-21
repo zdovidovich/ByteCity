@@ -9,16 +9,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -32,16 +30,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.bytecity.model.MainColor
+import com.example.bytecity.view.MainComposables.MainSnackbar
 import com.example.bytecity.view.MainComposables.TopBar
-import com.example.bytecity.viewmodel.RegistrationViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -53,13 +49,7 @@ fun RegistrationPage(navController: NavHostController) {
     Scaffold(
         modifier = Modifier.padding(8.dp),
         snackbarHost = {
-            SnackbarHost(snackbarHostState) { data ->
-                Snackbar(
-                    containerColor = MainColor.AppColor.value, contentColor = Color.Black
-                ) {
-                    Text(data.visuals.message)
-                }
-            }
+            MainSnackbar(snackbarHostState = snackbarHostState)
         },
         topBar = {
             TopBar {
@@ -67,7 +57,7 @@ fun RegistrationPage(navController: NavHostController) {
                     navController.navigateUp()
                 }) {
                     Icon(
-                        Icons.Filled.ArrowBack,
+                        Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Назад"
                     )
                 }
@@ -104,8 +94,6 @@ fun RegistrationPage(navController: NavHostController) {
             mutableStateOf("")
         }
 
-        val context = LocalContext.current
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -130,7 +118,9 @@ fun RegistrationPage(navController: NavHostController) {
             TextField(
                 modifier = Modifier.fillMaxWidth(), value = login,
                 onValueChange = {
-                    login = it
+                    if(it.length < 21) {
+                        login = it
+                    }
                 },
                 label = { Text("Логин") },
                 colors = textFiledColors,
@@ -140,7 +130,9 @@ fun RegistrationPage(navController: NavHostController) {
             TextField(
                 modifier = Modifier.fillMaxWidth(), value = email,
                 onValueChange = {
-                    email = it
+                    if (it.length < 41) {
+                        email = it
+                    }
                 },
                 label = { Text("Email") },
                 colors = textFiledColors,
@@ -150,7 +142,9 @@ fun RegistrationPage(navController: NavHostController) {
             TextField(
                 modifier = Modifier.fillMaxWidth(), value = contactnumber,
                 onValueChange = {
-                    contactnumber = it
+                    if (it.length < 14) {
+                        contactnumber = it
+                    }
                 },
                 label = { Text("Телефон") },
                 colors = textFiledColors,
@@ -159,7 +153,9 @@ fun RegistrationPage(navController: NavHostController) {
             Spacer(modifier = Modifier.padding(16.dp))
             TextField(modifier = Modifier.fillMaxWidth(), value = password,
                 onValueChange = {
-                    password = it
+                    if (it.length < 50) {
+                        password = it
+                    }
                 },
                 label = {
                     Text("Пароль")
@@ -197,7 +193,7 @@ fun RegistrationPage(navController: NavHostController) {
                                         4 -> "Неправильный контактный телефон"
                                         5 -> "Вы ввели уже зарегестрированный телефон"
                                         6 -> "Вы ввели пустой логин"
-                                        else -> "ERROR"
+                                        else -> "Ошибка, повторите позже"
                                     }, duration = SnackbarDuration.Short
                                 )
                             } else {
@@ -219,10 +215,3 @@ fun RegistrationPage(navController: NavHostController) {
         }
     }
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun RegistrationPreview() {
-//    RegistrationPage()
-//}

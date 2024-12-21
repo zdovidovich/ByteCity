@@ -1,4 +1,4 @@
-package com.example.bytecity.viewmodel
+package com.example.bytecity.view.MakeOrderPage
 
 import android.content.Context
 import android.util.Log

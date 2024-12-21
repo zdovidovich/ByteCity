@@ -110,7 +110,7 @@ fun SearchingTopBar(
                 iconButton()
                 TextField(modifier = Modifier .fillMaxWidth().padding(vertical=8.dp, horizontal = 4.dp),
                     value = text.value, onValueChange = {
-                                                  text.value = it
+                        text.value = it
                     }, singleLine = true, placeholder = {
                         Text(text = "Поиск")
                     }
@@ -126,14 +126,3 @@ fun SearchingTopBar(
         )
     )
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun TopBarPreview() {
-//    SearchingTopBar() {
-//        IconButton(onClick = { /*TODO*/ }) {
-//            Icon(Icons.Filled.ArrowBack, contentDescription = "")
-//        }
-//    }
-//}

@@ -1,4 +1,4 @@
-package com.example.bytecity.viewmodel
+package com.example.bytecity.view.LoginAndRegistrationPages
 
 import androidx.lifecycle.ViewModel
 import com.example.bytecity.model.Db
@@ -13,7 +13,7 @@ class RegistrationViewModel : ViewModel() {
             login.isEmpty() -> {
                 return 6 //EMPTY LOGIN
             }
-            !email.trim().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()) || email.length > 25 -> {
+            !email.trim().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()) -> {
                 return 3 // WRONG EMAIL
             }
             !contactNumber.trim().matches("^\\+[0-9]{12}$".toRegex()) -> {
