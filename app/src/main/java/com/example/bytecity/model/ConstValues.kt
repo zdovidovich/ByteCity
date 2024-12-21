@@ -43,7 +43,6 @@ sealed class Screens(val route:String) {
     data object MainContentScreens: Screens("maincontentpage")
     data object LoginScreens: Screens("loginpage")
     data object RegistrationScreens: Screens("registrationpage")
-//    data object AboutUsScreens: Screens("aboutuspage")
     data object ProductPageScreens: Screens("productpage")
     data object CategoryScreens: Screens("categorypage")
     data object ListProductsScreens: Screens("listproductitemspage")
@@ -61,7 +60,6 @@ sealed class Screens(val route:String) {
 sealed class ScreenWithModalNavigationDrawer(val list: List<String>){
     data object AllScreens: ScreenWithModalNavigationDrawer(listOf(
         Screens.MainContentScreens.route,
-//        Screens.AboutUsScreens.route,
         Screens.CategoryScreens.route,
         Screens.ListProductsScreens.route,
         Screens.FavouriteProductScreens.route,
