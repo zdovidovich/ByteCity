@@ -11,8 +11,6 @@ import com.example.bytecity.model.DbConnection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.ResultSet
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class AllOrderPagingSource(private val context: Context): PagingSource<Int, Order>() {
 
@@ -53,8 +51,6 @@ class AllOrderPagingSource(private val context: Context): PagingSource<Int, Orde
                         }
                         val product = Product.parse(resultSetProduct, discountValue = discountValue)
 
-                        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-                        val rdate = formatter.parse(resultSetProduct.getDate("releaseDate").toString())
                         val qty = resultSetOrderProducts[i]?.getInt("quantity")!!
                         productsTemp.add(ProductForCart(product, qty))
                         resultSetProduct.close()
