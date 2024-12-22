@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -109,7 +110,7 @@ fun FavouritePage(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text("Здесь пусто :)", modifier = Modifier.padding(it), fontSize = 26.sp)
+                    Text("Здесь пусто :)", modifier = Modifier.padding(it), fontSize = 26.sp, fontWeight = FontWeight.Medium)
                 }
             } else {
                 LazyVerticalGrid(

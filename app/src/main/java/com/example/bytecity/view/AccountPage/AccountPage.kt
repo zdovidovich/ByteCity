@@ -65,6 +65,7 @@ fun AccountPage(
             MainSnackbar(snackbarHostState = snackbarHostState)
         }
     ) {
+
         var openDialogExit by remember {
             mutableStateOf(false)
         }
@@ -74,6 +75,15 @@ fun AccountPage(
         var openDialogChangePassword by remember {
             mutableStateOf(false)
         }
+
+        var newEmail by remember { mutableStateOf("") }
+
+
+        var errColor by remember { mutableStateOf(Color.White) }
+        var buttonEnabled by remember { mutableStateOf(false) }
+        var oldPassword by remember { mutableStateOf("") }
+        var newPassword by remember { mutableStateOf("") }
+        var newPasswordRepeat by remember { mutableStateOf("") }
 
         Column(
             modifier = Modifier
@@ -136,7 +146,6 @@ fun AccountPage(
 
 
             if (openDialogChangeEmail) {
-                var newEmail by remember { mutableStateOf("") }
                 AlertDialog(
                     onDismissRequest = { openDialogChangeEmail = false },
                     title = { Text("Подтвердите действие", color = Color.White) },
@@ -144,12 +153,21 @@ fun AccountPage(
                         Button(
                             onClick = {
                                 scope.launch {
-                                    when (accountViewModel.changeEmail(newEmail = newEmail)) {
+                                    val res = accountViewModel.changeEmail(newEmail = newEmail)
+                                    openDialogChangeEmail = false
+                                    when (res) {
                                         200 -> {
-                                            openDialogChangeEmail = false
+                                            newEmail = ""
                                             snackbarHostState.currentSnackbarData?.dismiss()
                                             snackbarHostState.showSnackbar(
                                                 message = "Успешно!"
+                                            )
+                                        }
+
+                                        2 -> {
+                                            snackbarHostState.currentSnackbarData?.dismiss()
+                                            snackbarHostState.showSnackbar(
+                                                message = "Этот Email занят"
                                             )
                                         }
                                         3 -> {
@@ -158,6 +176,7 @@ fun AccountPage(
                                                 message = "Неправильный email"
                                             )
                                         }
+
                                         else -> {
                                             snackbarHostState.currentSnackbarData?.dismiss()
                                             snackbarHostState.showSnackbar(
@@ -169,7 +188,7 @@ fun AccountPage(
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color.White)
                         ) {
-                            Text("Выход", color = MainColor.AppColor.value)
+                            Text("Сменить", color = MainColor.AppColor.value)
                         }
                     },
                     dismissButton = {
@@ -204,11 +223,6 @@ fun AccountPage(
 
 
             if (openDialogChangePassword) {
-                var errColor by remember { mutableStateOf(Color.White) }
-                var buttonEnabled by remember { mutableStateOf(false) }
-                var oldPassword by remember { mutableStateOf("") }
-                var newPassword by remember { mutableStateOf("") }
-                var newPasswordRepeat by remember { mutableStateOf("") }
                 AlertDialog(
                     onDismissRequest = { openDialogExit = false },
                     title = { Text("Смена пароля", color = Color.White) },
@@ -224,6 +238,7 @@ fun AccountPage(
                                         )
                                     }
 
+                                    openDialogChangePassword = false
                                     when (accountViewModel.changePassword(
                                         oldPassword,
                                         newPassword
@@ -236,8 +251,6 @@ fun AccountPage(
                                         }
 
                                         200 -> {
-
-                                            openDialogChangePassword = false
                                             snackbarHostState.currentSnackbarData?.dismiss()
                                             snackbarHostState.showSnackbar(
                                                 message = "Успешно!"

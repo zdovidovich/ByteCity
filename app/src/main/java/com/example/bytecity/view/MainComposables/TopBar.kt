@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -93,8 +94,9 @@ fun TopBar(navIcon: @Composable () -> Unit, actionIcon: @Composable () -> Unit) 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchingTopBar(
-    text:MutableState<String>,
-    iconButton: @Composable () -> Unit) {
+    text: MutableState<String>,
+    iconButton: @Composable () -> Unit
+) {
     TopAppBar(
         modifier = Modifier
             .fillMaxWidth()
@@ -108,12 +110,18 @@ fun SearchingTopBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 iconButton()
-                TextField(modifier = Modifier .fillMaxWidth().padding(vertical=8.dp, horizontal = 4.dp),
+                TextField(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp, horizontal = 4.dp),
                     value = text.value, onValueChange = {
                         text.value = it
                     }, singleLine = true, placeholder = {
                         Text(text = "Поиск")
-                    }
+                    },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White
+                    )
                 )
 
             }

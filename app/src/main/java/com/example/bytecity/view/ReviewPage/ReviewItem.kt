@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.bytecity.businessClasses.Review
 
 @Composable
@@ -28,6 +29,7 @@ fun ReviewItem(review: Review) {
             .clip(RoundedCornerShape(8.dp))
             .background(Color.LightGray)
     ) {
+            Text(text = review.login, fontSize = 18.sp, fontWeight = FontWeight.Medium)
             Row {
                 Icon(Icons.Filled.Star, contentDescription = "Star", tint = Color.Yellow)
                 Text(

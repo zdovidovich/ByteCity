@@ -27,7 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
@@ -79,15 +81,19 @@ fun SearchPage(navHostController: NavHostController) {
                 }
 
                 products.loadState.refresh is LoadState.Error -> {
-                    Text(text = "Ошибка, повторите позже")
+                    Text(text = "Ошибка, повторите позже", modifier=Modifier.align(
+                        Alignment.Center), fontSize = 16.sp, fontWeight = FontWeight.Medium)
                 }
 
                 text.value.isEmpty() -> {
-                    Text(text = "Введите что-нибудь в поисковике :)")
+                    Text(text = "Введите что-нибудь в поисковике :)", modifier=Modifier.align(
+                        Alignment.Center), fontSize = 16.sp, fontWeight = FontWeight.Medium)
                 }
 
                 products.itemCount == 0 -> {
-                    Text("Ничего не найдено")
+                    Text(text = "Ничего не найдено", modifier=Modifier.align(
+                        Alignment.Center), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+
                 }
 
                 else -> {

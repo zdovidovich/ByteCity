@@ -22,11 +22,15 @@ class ReviewViewModel : ViewModel() {
                     val resultSetReviews = Db.getReviews(idProduct)
                     val resReviews = mutableListOf<Review>()
                     while (resultSetReviews.next()) {
+                        val idUser = resultSetReviews.getInt("idUser")
+                        val resultSetUser = Db.getUser(idUser)
+                        resultSetUser.next()
                         resReviews.add(
                             Review(
                                 idReview = resultSetReviews.getInt("idReview"),
                                 idProduct = resultSetReviews.getInt("idProduct"),
-                                idUser = resultSetReviews.getInt("idUser"),
+                                idUser = idUser,
+                                login = resultSetUser.getString("login"),
                                 rating = resultSetReviews.getDouble("rating"),
                                 review = resultSetReviews.getString("review")
                             )

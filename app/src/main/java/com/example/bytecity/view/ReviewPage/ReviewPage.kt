@@ -17,7 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.bytecity.businessClasses.Review
@@ -68,7 +70,8 @@ fun ReviewPage(
                 .fillMaxSize()
                 .padding(it)
         ) {
-            Text("Отзывы")
+
+            Text("Отзывы", fontSize = 30.sp, fontWeight = FontWeight.Medium)
             LazyColumn {
                 items(reviews) { review ->
                     ReviewItem(review = review)

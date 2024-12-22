@@ -45,6 +45,7 @@ class MakeOrderViewModel : ViewModel() {
                         connection.connection.transactionIsolation =
                             Connection.TRANSACTION_READ_COMMITTED
                         connection.connection.close()
+                        Db.cleanCart()
                     }
                 }
                 200

@@ -65,6 +65,16 @@ class Db {
 
         }
 
+        fun getUser(idUser:Int, connection: DbConnection = DbConn): ResultSet {
+            val query =
+                "SELECT idUser, login, email, contactNumber FROM User WHERE idUser = ?"
+            val statement = connection.connection.prepareStatement(query).apply {
+                setInt(1, idUser)
+            }
+            return statement.executeQuery()
+
+        }
+
 
         fun getColumnsAndCommentsInfo(category: String, connection: DbConnection = DbConn): ResultSet {
             val query =
