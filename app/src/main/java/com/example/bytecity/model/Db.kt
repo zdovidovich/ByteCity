@@ -23,15 +23,19 @@ class Db {
         }
 
         fun checkUserLogin(login: String, connection: DbConnection = DbConn): ResultSet {
-            val statement = connection.connection.prepareStatement("SELECT * FROM User WHERE login = ?")
-                .apply {
-                    setString(1, login)
-                }
+            val statement =
+                connection.connection.prepareStatement("SELECT * FROM User WHERE login = ?")
+                    .apply {
+                        setString(1, login)
+                    }
             return statement.executeQuery()
 
         }
 
-        fun checkUserContactNumber(contactNumber: String, connection: DbConnection = DbConn): ResultSet {
+        fun checkUserContactNumber(
+            contactNumber: String,
+            connection: DbConnection = DbConn
+        ): ResultSet {
             val statement =
                 connection.connection.prepareStatement("SELECT * FROM User WHERE contactNumber = ?")
                     .apply {
@@ -41,7 +45,13 @@ class Db {
         }
 
 
-        fun addUser(login: String, password: String, email: String, contactNumber: String, connection: DbConnection = DbConn): Int {
+        fun addUser(
+            login: String,
+            password: String,
+            email: String,
+            contactNumber: String,
+            connection: DbConnection = DbConn
+        ): Int {
             val query =
                 "INSERT INTO User (login, password, email, contactNumber) VALUES (?, ?, ?, ?)"
             val statement = connection.connection.prepareStatement(query).apply {
@@ -65,7 +75,7 @@ class Db {
 
         }
 
-        fun getUser(idUser:Int, connection: DbConnection = DbConn): ResultSet {
+        fun getUser(idUser: Int, connection: DbConnection = DbConn): ResultSet {
             val query =
                 "SELECT idUser, login, email, contactNumber FROM User WHERE idUser = ?"
             val statement = connection.connection.prepareStatement(query).apply {
@@ -76,9 +86,12 @@ class Db {
         }
 
 
-        fun getColumnsAndCommentsInfo(category: String, connection: DbConnection = DbConn): ResultSet {
+        fun getColumnsAndCommentsInfo(
+            category: String,
+            connection: DbConnection = DbConn
+        ): ResultSet {
             val query =
-                "SELECT column_name,column_comment FROM information_schema.columns WHERE table_schema='ByteCity' and table_name=?"
+                "SELECT column_name,column_comment FROM comments WHERE table_name = ?"
             val statement = connection.connection.prepareStatement(query).apply {
                 setString(1, category)
             }
@@ -207,6 +220,19 @@ class Db {
             return statement.executeQuery()
         }
 
+        fun getInfoAboutFormFactors(
+            product: Product,
+            connection: DbConnection = DbConn
+        ): ResultSet {
+            val query =
+                "SELECT GROUP_CONCAT(formFactor) AS formFactors FROM CaseFormFactor WHERE idPCCase = ? GROUP BY idPCCase;"
+            val statement = connection.connection.prepareStatement(query).apply {
+                setInt(1, product.idProduct)
+            }
+            return statement.executeQuery()
+        }
+
+
         fun getName(id: Int, connection: DbConnection = DbConn): ResultSet {
             val query =
                 "SELECT CONCAT_WS(' ', brand, model) as res FROM Product WHERE idProduct = ?"
@@ -216,7 +242,11 @@ class Db {
             return statement.executeQuery()
         }
 
-        private fun getProductInSomething(product: Product, something: String, connection: DbConnection = DbConn): ResultSet {
+        private fun getProductInSomething(
+            product: Product,
+            something: String,
+            connection: DbConnection = DbConn
+        ): ResultSet {
             val query = "SELECT idProduct FROM $something WHERE idProduct = ? AND idUser = ?"
             val statement = connection.connection.prepareStatement(query).apply {
                 setInt(1, product.idProduct)
@@ -278,28 +308,37 @@ class Db {
 
         fun insertOrder(
             productsForCart: List<ProductForCart>,
-            name: String,
             date: Date,
             connection: DbConnection = DbConn
-        ): List<Int> {
-            val res = mutableListOf<Int>()
+        ): Int {
             connection.connection.autoCommit = false
             connection.connection.transactionIsolation = Connection.TRANSACTION_REPEATABLE_READ
 
+            for (productForOrder in productsForCart) {
+                val queryCheck = "SELECT inStock FROM Product WHERE idProduct = ?"
+                val statementCheck = connection.connection.prepareStatement(queryCheck).apply {
+                    setInt(1, productForOrder.product.idProduct)
+                }
+                val resultSetCheck = statementCheck.executeQuery()
+                resultSetCheck.next()
+                if (resultSetCheck.getInt("inStock") < productForOrder.qty) {
+                    resultSetCheck.close()
+                    updateQtyCartToOne(idProduct = productForOrder.product.idProduct)
+                    return 1
+                }
+                resultSetCheck.close()
+            }
             val queryFirst =
-                "INSERT INTO OrderDetails (registrationDate, status, name) VALUES (?, ?, ?)"
+                "INSERT INTO OrderDetails (registrationDate, status) VALUES (?, ?)"
             val statementFirst = connection.connection.prepareStatement(queryFirst).apply {
                 setDate(1, date)
                 setString(2, "Оформлен")
-                setString(3, name)
             }
-
-            res.add(statementFirst.executeUpdate())
+            statementFirst.executeUpdate()
             val querySecond =
-                "SELECT idOrder FROM OrderDetails where registrationDate = ? AND name = ? ORDER BY idOrder DESC LIMIT 1"
+                "SELECT idOrder FROM OrderDetails where registrationDate = ? ORDER BY idOrder DESC LIMIT 1"
             val statementSecond = connection.connection.prepareStatement(querySecond).apply {
                 setDate(1, date)
-                setString(2, name)
             }
             val resultSetIdOrder = statementSecond.executeQuery()
             resultSetIdOrder.next()
@@ -309,20 +348,28 @@ class Db {
                 setInt(1, idOrder)
                 setInt(2, User.Id.id)
             }
-            res.add(statementThird.executeUpdate())
+            statementThird.executeUpdate()
             productsForCart.forEach { productForCart ->
-                res.add(
-                    insertProductForOrder(
-                        idOrder = idOrder,
-                        productForCart = productForCart,
-                        connection = connection
-                    )
+                insertProductForOrder(
+                    idOrder = idOrder,
+                    productForCart = productForCart,
+                    connection = connection
                 )
+                decreaseQty(productForCart.product.idProduct, productForCart.qty, connection)
             }
 
             connection.connection.commit()
             connection.connection.autoCommit = true
-            return res
+            return 200
+        }
+
+        private fun decreaseQty(idProduct: Int, qty: Int, connection: DbConnection = DbConn): Int {
+            val query = "UPDATE Product SET inStock = inStock - ? WHERE idProduct = ?"
+            val statement = connection.connection.prepareStatement(query).apply {
+                setInt(1, qty)
+                setInt(2, idProduct)
+            }
+            return statement.executeUpdate()
         }
 
 
@@ -350,7 +397,6 @@ class Db {
             }
             return statementFirst.executeQuery()
         }
-
 
 
         fun getOrderDetails(
@@ -437,7 +483,12 @@ class Db {
         }
 
 
-        fun uploadReview(idProduct: Int, rating: Float, text: String, connection: DbConnection = DbConn): Int {
+        fun uploadReview(
+            idProduct: Int,
+            rating: Float,
+            text: String,
+            connection: DbConnection = DbConn
+        ): Int {
             val query = "INSERT INTO Review (idProduct, idUser, rating, review) VALUES (?, ?, ?, ?)"
             val statement = connection.connection.prepareStatement(query).apply {
                 setInt(1, idProduct)
@@ -453,11 +504,11 @@ class Db {
             updateUser("password", newPassword, connection)
         }
 
-        fun updateEmail(newEmail:String, connection: DbConnection = DbConn){
+        fun updateEmail(newEmail: String, connection: DbConnection = DbConn) {
             updateUser("email", newEmail, connection)
         }
 
-        fun updateUser(key:String, value:String, connection: DbConnection = DbConn){
+        fun updateUser(key: String, value: String, connection: DbConnection = DbConn) {
             val query = "UPDATE User SET $key = ? WHERE idUser = ?"
             val statement = connection.connection.prepareStatement(query).apply {
                 setString(1, value)
@@ -466,6 +517,29 @@ class Db {
             statement.executeUpdate()
 
         }
+
+        fun checkUserReview(idProduct: Int, connection: DbConnection = DbConn): ResultSet {
+            val query = "SELECT idUser FROM Review WHERE idProduct = ? AND idUser = ?"
+            val statement = connection.connection.prepareStatement(query).apply {
+                setInt(1, idProduct)
+                setInt(2, User.Id.id)
+            }
+            return statement.executeQuery()
+        }
+
+        fun updateQtyCartToOne(idProduct: Int, connection: DbConnection = DbConn) {
+            val query = "UPDATE Cart SET quantity = 1 WHERE idProduct = ?"
+            val statement = connection.connection.prepareStatement(query).apply {
+                setInt(1, idProduct)
+            }
+            statement.executeUpdate()
+        }
+
+        fun checkCart() {
+
+        }
+
+
     }
 
 }

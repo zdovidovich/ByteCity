@@ -37,17 +37,6 @@ fun AllOrderItem(
             .padding(16.dp))
     {
         Text(
-            text = "Имя заказчика: ",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Gray
-        )
-        Text(
-            text =
-            order.name, fontSize = 18.sp, fontWeight = FontWeight.Medium
-        )
-        Spacer(modifier = Modifier.padding(vertical = 8.dp))
-        Text(
             text = "Дата заказа: ",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,

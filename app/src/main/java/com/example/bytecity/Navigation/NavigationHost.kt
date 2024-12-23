@@ -61,12 +61,6 @@ fun Navigation(navController: NavHostController, drawerState: DrawerState, conte
             val category =
                 navController.previousBackStackEntry?.savedStateHandle?.get<String>("catPage")
                     ?: Category.MainList.categories["Телефоны"]!!
-//            ListProductPreScreen(
-//                type = category,
-//                scope = scope,
-//                drawerState = drawerState,
-//                navHostController = navController
-//            )
             ListProductPage(
                 type = category,
                 scope = scope,
@@ -114,8 +108,8 @@ fun Navigation(navController: NavHostController, drawerState: DrawerState, conte
         }
         composable(route = Screens.OrderPage.route) {
             val order = navController.previousBackStackEntry?.savedStateHandle?.get<Order>("order")
-                ?: Order(name = "", registrationDate = Date(), products = listOf(), status = "")
-            OrderPage(order = order, navHostController = navController)
+                ?: Order(registrationDate = Date(), products = listOf(), status = "")
+            OrderPage(order = order, navHostController = navController, scope = scope)
         }
         composable(route = Screens.SearchPage.route) {
             SearchPage(navHostController = navController)

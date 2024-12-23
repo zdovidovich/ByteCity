@@ -37,10 +37,13 @@ class CartViewModel : ViewModel() {
                 while (resultSetProductIds.next()) {
                     val id = resultSetProductIds.getInt("idProduct")
                     val resultSetProduct = Db.getProductById(id)
-
                     resultSetProduct.next()
+                    var qty = resultSetProductIds.getInt("quantity")
                     val inStock = resultSetProduct.getInt("inStock")
-
+                    if(qty > inStock){
+                        qty = 1
+                        Db.updateQtyCartToOne(idProduct = id)
+                    }
                     if(inStock == 0){
                         Db.deleteProductCart(id)
                         continue
@@ -57,7 +60,7 @@ class CartViewModel : ViewModel() {
 
                     val product = Product.parse(resultSetProduct, discountValue)
                     val productForCart =
-                        ProductForCart(product, resultSetProductIds.getInt("quantity"))
+                        ProductForCart(product, qty)
                     productsInWishList.add(productForCart)
                     resultSetProduct.close()
                 }

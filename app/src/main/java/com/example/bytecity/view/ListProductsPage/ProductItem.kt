@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -103,7 +104,8 @@ fun ProductItem(
             .fillMaxSize()
             .clip(RoundedCornerShape(12.dp))
             .background(Color.LightGray)
-
+            .height(320.dp)
+        , verticalArrangement = Arrangement.SpaceBetween
     ) {
         Image(
             painter = rememberAsyncImagePainter(
@@ -114,7 +116,6 @@ fun ProductItem(
             ),
             contentDescription = product.brand,
             modifier = Modifier
-                .fillMaxSize()
                 .aspectRatio(1f)
                 .clickable {
                     navHostController.currentBackStackEntry?.savedStateHandle?.set(

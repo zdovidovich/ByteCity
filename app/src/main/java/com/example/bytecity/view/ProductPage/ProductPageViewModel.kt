@@ -33,6 +33,16 @@ class ProductPageViewModel : ViewModel() {
                     tmp.add(key)
                     res.add(tmp)
                 }
+            } else if (product.type == "PCCase") {
+                val resultSetSockets = Db.getInfoAboutFormFactors(product)
+                resultSetSockets.next()
+                val key = resultSetSockets.getString("formFactors")
+                if (!resultSetSockets.wasNull()) {
+                    val tmp = mutableListOf<String>()
+                    tmp.add("Форм-фактор(-ы)")
+                    tmp.add(key)
+                    res.add(tmp)
+                }
             }
             val resultSetColumnsAndComments = Db.getColumnsAndCommentsInfo(product.type)
             val resultSetValues = Db.getInfo(product)
@@ -105,17 +115,16 @@ class ProductPageViewModel : ViewModel() {
         )
     }
 
-    private fun findProducts(product: Product):Pair<Boolean, Boolean>{
-        if(User.Id.id == -1) return Pair(false, false)
+    private fun findProducts(product: Product): Pair<Boolean, Boolean> {
+        if (User.Id.id == -1) return Pair(false, false)
         val resultSetProductInFavourite = Db.getProductInFavourite(product)
         val resultSetProductInCart = Db.getProductInCart(product)
         var productInFavourite = false
         var productInCart = false
-        if(resultSetProductInFavourite.isBeforeFirst)
-        {
+        if (resultSetProductInFavourite.isBeforeFirst) {
             productInFavourite = true
         }
-        if(resultSetProductInCart.isBeforeFirst){
+        if (resultSetProductInCart.isBeforeFirst) {
             productInCart = true
         }
 
@@ -145,7 +154,7 @@ class ProductPageViewModel : ViewModel() {
 
 
     fun addCart(product: Product): Int {
-        if(product.inStock == 0) return 2 // NOT ON SALE
+        if (product.inStock == 0) return 2 // NOT ON SALE
 
         try {
             val resultSetCart = Db.getProductCart(product)

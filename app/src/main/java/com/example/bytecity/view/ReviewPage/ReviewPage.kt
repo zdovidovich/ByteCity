@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -60,7 +60,7 @@ fun ReviewPage(
                 IconButton(onClick = {
                     navHostController.navigateUp()
                 }) {
-                    Icon(Icons.Filled.Menu, "Меню")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
                 }
             })
         }

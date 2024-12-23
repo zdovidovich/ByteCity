@@ -156,7 +156,6 @@ fun CartPage(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-//                        .padding(it)
                 ) {
                     items(products) { product ->
                         CartProductItem(

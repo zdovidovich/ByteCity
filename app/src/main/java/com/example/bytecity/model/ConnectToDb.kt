@@ -10,6 +10,7 @@ open class DbConnection{
     lateinit var connection: Connection
 
 
+
     private fun loadPropertiesFromAssets(context: Context): Properties {
         val props = Properties()
         try {
@@ -43,4 +44,4 @@ open class DbConnection{
 }
 
 
-object DbConn:  DbConnection()
+object DbConn: DbConnection()

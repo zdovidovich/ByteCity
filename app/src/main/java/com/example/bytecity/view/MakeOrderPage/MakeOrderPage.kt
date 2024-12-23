@@ -19,15 +19,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -80,9 +78,6 @@ fun makeOrderPage(
             verticalArrangement = Arrangement.Top
         ) {
 
-            var name by remember { mutableStateOf("") }
-
-
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 item {
                     Text(text = "Оформление заказа", fontSize = 30.sp)
@@ -95,18 +90,6 @@ fun makeOrderPage(
                     )
                 }
                 item {
-                    Text("Контактная информация", fontSize = 24.sp)
-                    Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                    TextField(value = name, onValueChange = {
-                        name = it
-                    }, label = { Text("Имя") }, singleLine = true,
-                        colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.LightGray,
-
-                            )
-                    )
-
-                    Spacer(modifier = Modifier.padding(vertical = 8.dp))
                     TextField(
                         value = User.Id.email, onValueChange = {}, readOnly = true,
                         label = { Text("Email") }, singleLine = true,
@@ -122,8 +105,7 @@ fun makeOrderPage(
                         label = { Text("Телефон") }, singleLine = true,
                         colors = TextFieldDefaults.colors(
                             unfocusedContainerColor = Color.LightGray,
-
-                            )
+                        )
                     )
                 }
                 item {
@@ -152,41 +134,49 @@ fun makeOrderPage(
                 item {
                     Button(
                         onClick = {
-                            val res = makeOrderViewModel.makeOrder(
-                                products = productsForCart,
-                                name = name,
-                                context = context
-                            )
+                            scope.launch {
+                                val res = makeOrderViewModel.makeOrder(
+                                    products = productsForCart,
+                                    context = context
+                                )
+                                when (res) {
+                                    2 -> {
+                                        scope.launch {
+                                            snackbarHostState.currentSnackbarData?.dismiss()
+                                            val res1 = snackbarHostState.showSnackbar(
+                                                message = "Неправильное количество продуктов для заказа",
+                                                actionLabel = "Перезагрузить корзину"
+                                            )
+                                            if(res1 == SnackbarResult.ActionPerformed){
+                                             navHostController.navigate(Screens.CartProductScreens.route){
+                                                 popUpTo(Screens.MainContentScreens.route){
 
-                            when (res) {
-                                2 -> {
-                                    scope.launch {
-                                        snackbarHostState.currentSnackbarData?.dismiss()
-                                        snackbarHostState.showSnackbar(
-                                            message = "Вы ввели пустое имя"
-                                        )
+                                                 }
+                                             }
+                                            }
+                                        }
                                     }
-                                }
 
-                                1 -> {
-                                    scope.launch {
-                                        snackbarHostState.currentSnackbarData?.dismiss()
-                                        snackbarHostState.showSnackbar(
-                                            message = "Ошибка. Повторите позже"
-                                        )
+                                    1 -> {
+                                        scope.launch {
+                                            snackbarHostState.currentSnackbarData?.dismiss()
+                                            snackbarHostState.showSnackbar(
+                                                message = "Ошибка. Повторите позже"
+                                            )
+                                        }
                                     }
-                                }
 
-                                else -> {
-                                    navHostController.navigate(Screens.MainContentScreens.route) {
-                                        popUpTo(Screens.MainContentScreens.route) {
-                                            inclusive = true
+                                    else -> {
+                                        navHostController.navigate(Screens.MainContentScreens.route) {
+                                            popUpTo(Screens.MainContentScreens.route) {
+                                                inclusive = true
+                                            }
                                         }
                                     }
                                 }
+
+
                             }
-
-
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MainColor.AppColor.value,

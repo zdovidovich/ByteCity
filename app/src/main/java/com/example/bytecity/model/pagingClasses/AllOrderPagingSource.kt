@@ -33,7 +33,6 @@ class AllOrderPagingSource(private val context: Context): PagingSource<Int, Orde
                 resultSetOrderProducts = Db.getOrderProducts(resultSetOrdersId!!, pageSize, page * pageSize, connection)
                 for (i in resultSetOrderDetails.indices) {
                     resultSetOrderDetails[i]?.next()
-                    val name = resultSetOrderDetails[i]?.getString("name")
                     val status = resultSetOrderDetails[i]?.getString("status")
                     val registrationDate = resultSetOrderDetails[i]?.getDate("registrationDate")
                     val productsTemp = mutableListOf<ProductForCart>()
@@ -55,7 +54,7 @@ class AllOrderPagingSource(private val context: Context): PagingSource<Int, Orde
                         productsTemp.add(ProductForCart(product, qty))
                         resultSetProduct.close()
                     }
-                    orders.add(Order(name=name!!, products= productsTemp, status = status!!, registrationDate = registrationDate!!))
+                    orders.add(Order(products= productsTemp, status = status!!, registrationDate = registrationDate!!))
                 }
 
             }

@@ -27,7 +27,6 @@ class ReviewViewModel : ViewModel() {
                         resultSetUser.next()
                         resReviews.add(
                             Review(
-                                idReview = resultSetReviews.getInt("idReview"),
                                 idProduct = resultSetReviews.getInt("idProduct"),
                                 idUser = idUser,
                                 login = resultSetUser.getString("login"),
