@@ -36,7 +36,7 @@ fun ListProductPage(
     navHostController: NavHostController
 ) {
 
-    val viewModel: ListProductViewModel = viewModel()
+    val viewModel: ListProductViewModel = viewModel(key = type)
     val context = LocalContext.current
     LaunchedEffect(type) {
         viewModel.findProducts(type, context)
