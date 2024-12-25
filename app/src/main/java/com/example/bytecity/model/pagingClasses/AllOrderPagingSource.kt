@@ -6,8 +6,8 @@ import androidx.paging.PagingState
 import com.example.bytecity.businessClasses.Order
 import com.example.bytecity.businessClasses.Product
 import com.example.bytecity.businessClasses.ProductForCart
-import com.example.bytecity.model.Db
 import com.example.bytecity.model.DbConnection
+import com.example.bytecity.model.DbHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.ResultSet
@@ -26,24 +26,24 @@ class AllOrderPagingSource(private val context: Context): PagingSource<Int, Orde
             withContext(Dispatchers.IO) {
                 val connection = DbConnection()
                 connection.connect(context)
-                resultSetOrdersId = Db.getOrdersId(pageSize, page * pageSize, connection)
-                resultSetOrderDetails = Db.getOrderDetails(resultSetOrdersId!!, pageSize, page * pageSize, connection)
+                resultSetOrdersId = DbHelper.getOrdersId(pageSize, page * pageSize, connection)
+                resultSetOrderDetails = DbHelper.getOrderDetails(resultSetOrdersId!!, pageSize, page * pageSize, connection)
                 resultSetOrdersId?.close()
-                resultSetOrdersId = Db.getOrdersId(pageSize, page * pageSize, connection)
-                resultSetOrderProducts = Db.getOrderProducts(resultSetOrdersId!!, pageSize, page * pageSize, connection)
+                resultSetOrdersId = DbHelper.getOrdersId(pageSize, page * pageSize, connection)
+                resultSetOrderProducts = DbHelper.getOrderProducts(resultSetOrdersId!!, pageSize, page * pageSize, connection)
                 for (i in resultSetOrderDetails.indices) {
                     resultSetOrderDetails[i]?.next()
                     val status = resultSetOrderDetails[i]?.getString("status")
                     val registrationDate = resultSetOrderDetails[i]?.getDate("registrationDate")
                     val productsTemp = mutableListOf<ProductForCart>()
                     while(resultSetOrderProducts[i]?.next()!!){
-                        val resultSetProduct = Db.getProductById(resultSetOrderProducts[i]?.getInt("idProduct")!!, pageSize, page * pageSize, connection)
+                        val resultSetProduct = DbHelper.getProductById(resultSetOrderProducts[i]?.getInt("idProduct")!!, pageSize, page * pageSize, connection)
                         resultSetProduct.next()
 
                         val idDiscount = resultSetProduct.getInt("idDiscount")
                         var discountValue = 0.0
                         if(!resultSetProduct.wasNull()){
-                            val resultSetDiscount = Db.getInfoDiscount(idDiscount, pageSize, page * pageSize, connection)
+                            val resultSetDiscount = DbHelper.getInfoDiscount(idDiscount, pageSize, page * pageSize, connection)
                             resultSetDiscount.next()
                             discountValue = resultSetDiscount.getDouble("value")
                             resultSetDiscount.close()

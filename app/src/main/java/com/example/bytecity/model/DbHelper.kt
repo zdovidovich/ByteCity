@@ -8,7 +8,7 @@ import java.sql.Date
 import java.sql.ResultSet
 
 
-class Db {
+class DbHelper {
 
     companion object {
         fun checkUserEmail(email: String, connection: DbConnection = DbConn): ResultSet {

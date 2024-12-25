@@ -153,6 +153,7 @@ fun LoginPage(navController: NavHostController) {
                         scopeSnackBar.launch(Dispatchers.IO) {
                             val resCode = loginViewModel.checkData(login, password)
                             if (resCode != 200) {
+                                snackbarHostState.currentSnackbarData?.dismiss()
                                 snackbarHostState.showSnackbar(
                                     when (resCode) {
                                         0 -> "Вы ввели пустой логин"

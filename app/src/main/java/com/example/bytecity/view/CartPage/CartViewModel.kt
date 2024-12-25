@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bytecity.businessClasses.Product
 import com.example.bytecity.businessClasses.ProductForCart
-import com.example.bytecity.model.Db
+import com.example.bytecity.model.DbHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -23,7 +23,7 @@ class CartViewModel : ViewModel() {
     private fun getProductsFromCart() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val resultSetProductIds = Db.getAllProductCart()
+                val resultSetProductIds = DbHelper.getAllProductCart()
                 if (!resultSetProductIds.isBeforeFirst) {
                     resultSetProductIds.close()
                     withContext(Dispatchers.Main) {
@@ -36,23 +36,23 @@ class CartViewModel : ViewModel() {
                 val productsInWishList = mutableListOf<ProductForCart>()
                 while (resultSetProductIds.next()) {
                     val id = resultSetProductIds.getInt("idProduct")
-                    val resultSetProduct = Db.getProductById(id)
+                    val resultSetProduct = DbHelper.getProductById(id)
                     resultSetProduct.next()
                     var qty = resultSetProductIds.getInt("quantity")
                     val inStock = resultSetProduct.getInt("inStock")
                     if(qty > inStock){
                         qty = 1
-                        Db.updateQtyCartToOne(idProduct = id)
+                        DbHelper.updateQtyCartToOne(idProduct = id)
                     }
                     if(inStock == 0){
-                        Db.deleteProductCart(id)
+                        DbHelper.deleteProductCart(id)
                         continue
                     }
 
                     val idDiscount = resultSetProduct.getInt("idDiscount")
                     var discountValue = 0.0
                     if(!resultSetProduct.wasNull()){
-                        val resultSetDiscount = Db.getInfoDiscount(idDiscount)
+                        val resultSetDiscount = DbHelper.getInfoDiscount(idDiscount)
                         resultSetDiscount.next()
                         discountValue = resultSetDiscount.getDouble("value")
                         resultSetDiscount.close()
@@ -82,7 +82,7 @@ class CartViewModel : ViewModel() {
 
     fun cleanCart() {
         viewModelScope.launch(Dispatchers.IO) {
-            Db.cleanCart()
+            DbHelper.cleanCart()
             _cartState.value = _cartState.value.copy(
                 products = listOf()
             )

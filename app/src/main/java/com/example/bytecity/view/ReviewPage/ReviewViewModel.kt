@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bytecity.businessClasses.Review
-import com.example.bytecity.model.Db
+import com.example.bytecity.model.DbHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -19,11 +19,11 @@ class ReviewViewModel : ViewModel() {
         try {
             runBlocking {
                 viewModelScope.launch(Dispatchers.IO) {
-                    val resultSetReviews = Db.getReviews(idProduct)
+                    val resultSetReviews = DbHelper.getReviews(idProduct)
                     val resReviews = mutableListOf<Review>()
                     while (resultSetReviews.next()) {
                         val idUser = resultSetReviews.getInt("idUser")
-                        val resultSetUser = Db.getUser(idUser)
+                        val resultSetUser = DbHelper.getUser(idUser)
                         resultSetUser.next()
                         resReviews.add(
                             Review(

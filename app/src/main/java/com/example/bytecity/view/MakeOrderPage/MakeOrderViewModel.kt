@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.bytecity.businessClasses.ProductForCart
-import com.example.bytecity.model.Db
 import com.example.bytecity.model.DbConnection
+import com.example.bytecity.model.DbHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.Connection
@@ -28,7 +28,7 @@ class MakeOrderViewModel : ViewModel() {
                 connection.connection.autoCommit = false
                 connection.connection.transactionIsolation =
                     Connection.TRANSACTION_REPEATABLE_READ
-                res = Db.insertOrder(
+                res = DbHelper.insertOrder(
                     productsForCart = products,
                     date = Date.valueOf(LocalDate.now().toString()),
                     connection = connection
@@ -41,7 +41,7 @@ class MakeOrderViewModel : ViewModel() {
                 return 2
             }
             withContext(Dispatchers.IO) {
-                Db.cleanCart(connection)
+                DbHelper.cleanCart(connection)
             }
             connection.connection.close()
             return 200

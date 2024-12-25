@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bytecity.businessClasses.Product
-import com.example.bytecity.model.Db
+import com.example.bytecity.model.DbHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -25,7 +25,7 @@ class FavouriteViewModel : ViewModel() {
     private fun getFavouriteProducts() {
         viewModelScope.launch(Dispatchers.IO) {
             try{
-            val resultSetProductIds = Db.getAllProductWishList()
+            val resultSetProductIds = DbHelper.getAllProductWishList()
             if (!resultSetProductIds.isBeforeFirst) {
                 resultSetProductIds.close()
                 withContext(Dispatchers.Main) {
@@ -38,13 +38,13 @@ class FavouriteViewModel : ViewModel() {
             val productsInWishList = mutableListOf<Product>()
             while (resultSetProductIds.next()) {
                 val id = resultSetProductIds.getInt("idProduct")
-                val resultSetProduct = Db.getProductById(id)
+                val resultSetProduct = DbHelper.getProductById(id)
                 resultSetProduct.next()
 
                 val idDiscount = resultSetProduct.getInt("idDiscount")
                 var discountValue = 0.0
                 if(!resultSetProduct.wasNull()){
-                    val resultSetDiscount = Db.getInfoDiscount(idDiscount)
+                    val resultSetDiscount = DbHelper.getInfoDiscount(idDiscount)
                     resultSetDiscount.next()
                     discountValue = resultSetDiscount.getDouble("value")
                     resultSetDiscount.close()

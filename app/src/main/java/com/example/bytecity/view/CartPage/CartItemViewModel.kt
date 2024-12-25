@@ -3,7 +3,7 @@ package com.example.bytecity.view.CartPage
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bytecity.businessClasses.ProductForCart
-import com.example.bytecity.model.Db
+import com.example.bytecity.model.DbHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -18,7 +18,7 @@ class CartItemViewModel : ViewModel() {
         }
         return try {
             viewModelScope.launch(Dispatchers.IO) {
-                Db.updateProductCartPlusQty(productForCart.product)
+                DbHelper.updateProductCartPlusQty(productForCart.product)
             }
             frontAddOneProduct()
             200 //That's good
@@ -36,7 +36,7 @@ class CartItemViewModel : ViewModel() {
         }
         return try {
             viewModelScope.launch(Dispatchers.IO) {
-                Db.updateProductCartMinusQty(productForCart.product)
+                DbHelper.updateProductCartMinusQty(productForCart.product)
             }
             frontRemoveOneProduct()
             200 // That's good
@@ -51,7 +51,7 @@ class CartItemViewModel : ViewModel() {
     ): Int{
         return try{
             viewModelScope.launch(Dispatchers.IO) {
-                Db.deleteProductCart(productForCart.product)
+                DbHelper.deleteProductCart(productForCart.product)
                 frontRemoveProductFromCart()
             }
             200 // That's good

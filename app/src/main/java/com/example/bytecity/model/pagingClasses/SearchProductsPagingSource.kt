@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.bytecity.businessClasses.Product
-import com.example.bytecity.model.Db
 import com.example.bytecity.model.DbConnection
+import com.example.bytecity.model.DbHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.ResultSet
@@ -23,7 +23,7 @@ class SearchProductsPagingSource(val text:String, val context:Context): PagingSo
             val resultSetListProduct: ResultSet
             withContext(Dispatchers.IO) {
                 resultSetListProduct =
-                    Db.getProductsBySearching(text, connection, pageSize, page * pageSize)
+                    DbHelper.getProductsBySearching(text, connection, pageSize, page * pageSize)
             }
             val allProducts = mutableListOf<Product>()
             while (resultSetListProduct.next()) {
@@ -31,7 +31,7 @@ class SearchProductsPagingSource(val text:String, val context:Context): PagingSo
                 val idDiscount = resultSetListProduct.getInt("idDiscount")
                 var discountValue = 0.0
                 if (!resultSetListProduct.wasNull()) {
-                    val resultSetDiscount = Db.getInfoDiscount(idDiscount)
+                    val resultSetDiscount = DbHelper.getInfoDiscount(idDiscount)
                     resultSetDiscount.next()
                     discountValue = resultSetDiscount.getDouble("value")
                     resultSetDiscount.close()

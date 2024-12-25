@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bytecity.businessClasses.Product
-import com.example.bytecity.model.Db
+import com.example.bytecity.model.DbHelper
 import com.example.bytecity.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,7 +24,7 @@ class ProductPageViewModel : ViewModel() {
             }
             val res: MutableList<MutableList<String>> = mutableListOf()
             if (product.type == "Cooling") {
-                val resultSetSockets = Db.getInfoAboutCooling(product)
+                val resultSetSockets = DbHelper.getInfoAboutCooling(product)
                 resultSetSockets.next()
                 val key = resultSetSockets.getString("socket")
                 if (!resultSetSockets.wasNull()) {
@@ -34,7 +34,7 @@ class ProductPageViewModel : ViewModel() {
                     res.add(tmp)
                 }
             } else if (product.type == "PCCase") {
-                val resultSetSockets = Db.getInfoAboutFormFactors(product)
+                val resultSetSockets = DbHelper.getInfoAboutFormFactors(product)
                 resultSetSockets.next()
                 val key = resultSetSockets.getString("formFactors")
                 if (!resultSetSockets.wasNull()) {
@@ -44,8 +44,8 @@ class ProductPageViewModel : ViewModel() {
                     res.add(tmp)
                 }
             }
-            val resultSetColumnsAndComments = Db.getColumnsAndCommentsInfo(product.type)
-            val resultSetValues = Db.getInfo(product)
+            val resultSetColumnsAndComments = DbHelper.getColumnsAndCommentsInfo(product.type)
+            val resultSetValues = DbHelper.getInfo(product)
             if (resultSetValues.isBeforeFirst && resultSetColumnsAndComments.isBeforeFirst) {
                 resultSetValues.next()
                 while (resultSetColumnsAndComments.next()) {
@@ -75,7 +75,7 @@ class ProductPageViewModel : ViewModel() {
     }
 
     private fun makePC(product: Product) {
-        val resultSetCommentsAndColumns = Db.getColumnsAndCommentsInfo(product.type)
+        val resultSetCommentsAndColumns = DbHelper.getColumnsAndCommentsInfo(product.type)
         if (!resultSetCommentsAndColumns.isBeforeFirst) {
             _productState.value = _productState.value.copy(
                 loading = false
@@ -83,7 +83,7 @@ class ProductPageViewModel : ViewModel() {
             return
         }
         val res: MutableList<MutableList<String>> = mutableListOf()
-        val resultSetValues = Db.getInfo(product)
+        val resultSetValues = DbHelper.getInfo(product)
         if (resultSetValues.isBeforeFirst && resultSetCommentsAndColumns.isBeforeFirst) {
             resultSetValues.next()
             while (resultSetCommentsAndColumns.next()) {
@@ -92,7 +92,7 @@ class ProductPageViewModel : ViewModel() {
                 if (column == "idPC") continue
                 val value = resultSetValues.getInt(column)
                 if (resultSetValues.wasNull()) continue
-                val resultSetName = Db.getName(value)
+                val resultSetName = DbHelper.getName(value)
                 resultSetName.next()
                 val name = resultSetName.getString("res")
                 resultSetName.close()
@@ -117,8 +117,8 @@ class ProductPageViewModel : ViewModel() {
 
     private fun findProducts(product: Product): Pair<Boolean, Boolean> {
         if (User.Id.id == -1) return Pair(false, false)
-        val resultSetProductInFavourite = Db.getProductInFavourite(product)
-        val resultSetProductInCart = Db.getProductInCart(product)
+        val resultSetProductInFavourite = DbHelper.getProductInFavourite(product)
+        val resultSetProductInCart = DbHelper.getProductInCart(product)
         var productInFavourite = false
         var productInCart = false
         if (resultSetProductInFavourite.isBeforeFirst) {
@@ -137,13 +137,13 @@ class ProductPageViewModel : ViewModel() {
 
     fun addWishList(product: Product): Int {
         try {
-            val resultSetWishList = Db.getProductWishList(product)
+            val resultSetWishList = DbHelper.getProductWishList(product)
             if (resultSetWishList.isBeforeFirst) {
                 resultSetWishList.close()
-                Db.deleteProductWishList(product)
+                DbHelper.deleteProductWishList(product)
                 return 1 // DELETED
             }
-            Db.addProductToWishList(product)
+            DbHelper.addProductToWishList(product)
             resultSetWishList.close()
             return 0 //ADDED
 
@@ -157,13 +157,13 @@ class ProductPageViewModel : ViewModel() {
         if (product.inStock == 0) return 2 // NOT ON SALE
 
         try {
-            val resultSetCart = Db.getProductCart(product)
+            val resultSetCart = DbHelper.getProductCart(product)
             if (resultSetCart.isBeforeFirst) {
                 resultSetCart.close()
-                Db.deleteProductCart(product)
+                DbHelper.deleteProductCart(product)
                 return 1 // DELETED
             }
-            Db.addProductToCart(product)
+            DbHelper.addProductToCart(product)
             resultSetCart.close()
             return 0 //ADDED
 

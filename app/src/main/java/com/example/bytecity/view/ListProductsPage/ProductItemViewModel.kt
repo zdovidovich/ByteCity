@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bytecity.businessClasses.Product
-import com.example.bytecity.model.Db
+import com.example.bytecity.model.DbHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -18,7 +18,7 @@ class ProductItemViewModel : ViewModel() {
     fun getRating(product: Product) {
         try {
             viewModelScope.launch(Dispatchers.IO) {
-                val resultSetRating = Db.getRating(product)
+                val resultSetRating = DbHelper.getRating(product)
                 if (resultSetRating.isBeforeFirst) {
                     var res = 0.0f
                     var qty = 0
@@ -49,13 +49,13 @@ class ProductItemViewModel : ViewModel() {
 
     fun addWishList(product: Product): Int {
         try {
-            val resultSetWishList = Db.getProductWishList(product)
+            val resultSetWishList = DbHelper.getProductWishList(product)
             if (resultSetWishList.isBeforeFirst) {
                 resultSetWishList.close()
-                Db.deleteProductWishList(product)
+                DbHelper.deleteProductWishList(product)
                 return 1 // DELETED
             }
-            Db.addProductToWishList(product)
+            DbHelper.addProductToWishList(product)
             resultSetWishList.close()
             return 0 //ADDED
 
@@ -69,13 +69,13 @@ class ProductItemViewModel : ViewModel() {
         if (product.inStock == 0) return 2 // NOT ON SALE
 
         try {
-            val resultSetCart = Db.getProductCart(product)
+            val resultSetCart = DbHelper.getProductCart(product)
             if (resultSetCart.isBeforeFirst) {
                 resultSetCart.close()
-                Db.deleteProductCart(product)
+                DbHelper.deleteProductCart(product)
                 return 1 // DELETED
             }
-            Db.addProductToCart(product)
+            DbHelper.addProductToCart(product)
             resultSetCart.close()
             return 0 //ADDED
 

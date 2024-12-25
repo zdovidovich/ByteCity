@@ -1,7 +1,7 @@
 package com.example.bytecity.view.OrderPage
 
 import androidx.lifecycle.ViewModel
-import com.example.bytecity.model.Db
+import com.example.bytecity.model.DbHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.ResultSet
@@ -12,7 +12,7 @@ class OrderViewModel: ViewModel() {
         return try{
             val resultSetReview: ResultSet
             withContext(Dispatchers.IO){
-                resultSetReview = Db.checkUserReview(idProduct)}
+                resultSetReview = DbHelper.checkUserReview(idProduct)}
                 if(!resultSetReview.isBeforeFirst){
                     resultSetReview.close()
                     return 200

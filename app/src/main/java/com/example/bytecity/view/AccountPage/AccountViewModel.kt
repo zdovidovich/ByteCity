@@ -1,7 +1,7 @@
 package com.example.bytecity.view.AccountPage
 
 import androidx.lifecycle.ViewModel
-import com.example.bytecity.model.Db
+import com.example.bytecity.model.DbHelper
 import com.example.bytecity.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,7 +20,7 @@ class AccountViewModel : ViewModel() {
 
             val resultSetEmail: ResultSet
             withContext(Dispatchers.IO){
-                resultSetEmail = Db.checkUserEmail(newEmail.trim())
+                resultSetEmail = DbHelper.checkUserEmail(newEmail.trim())
 
             }
             if(resultSetEmail.isBeforeFirst){
@@ -28,7 +28,7 @@ class AccountViewModel : ViewModel() {
             }
             resultSetEmail.close()
             withContext(Dispatchers.IO){
-                Db.updateEmail(newEmail.trim())
+                DbHelper.updateEmail(newEmail.trim())
             }
             User.Id.email = newEmail.trim()
             200
@@ -45,14 +45,14 @@ class AccountViewModel : ViewModel() {
                 MessageDigest.getInstance("SHA-256").digest(oldPassword.trim().toByteArray())
             val passwordHash = bytes.joinToString("") { "%02x".format(it) }
             val resultSetUser =
-                withContext(Dispatchers.IO) { Db.getUser(User.Id.login, passwordHash) }
+                withContext(Dispatchers.IO) { DbHelper.getUser(User.Id.login, passwordHash) }
             if (!resultSetUser.isBeforeFirst) {
                 return 2 //Wrong old password
             }
             val newBytes =
                 MessageDigest.getInstance("SHA-256").digest(newPassword.trim().toByteArray())
             val newPasswordHash = newBytes.joinToString("") { "%02x".format(it) }
-            withContext(Dispatchers.IO) { Db.updatePassword(newPasswordHash) }
+            withContext(Dispatchers.IO) { DbHelper.updatePassword(newPasswordHash) }
             200
         } catch (ex: Exception) {
             1 // Err

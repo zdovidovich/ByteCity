@@ -1,7 +1,7 @@
 package com.example.bytecity.view.LoginAndRegistrationPages
 
 import androidx.lifecycle.ViewModel
-import com.example.bytecity.model.Db
+import com.example.bytecity.model.DbHelper
 import java.security.MessageDigest
 
 class RegistrationViewModel : ViewModel() {
@@ -24,21 +24,21 @@ class RegistrationViewModel : ViewModel() {
             }
         }
 
-        val resultSetEmail = Db.checkUserEmail(email.trim())
+        val resultSetEmail = DbHelper.checkUserEmail(email.trim())
         if (resultSetEmail.isBeforeFirst) {
             resultSetEmail.close()
             return 0 // USED EMAIL
         }
         resultSetEmail.close()
 
-        val resultSetLogin = Db.checkUserLogin(login.trim())
+        val resultSetLogin = DbHelper.checkUserLogin(login.trim())
         if (resultSetLogin.isBeforeFirst) {
             resultSetLogin.close()
             return 1 // USED LOGIN
         }
         resultSetLogin.close()
 
-        val resultSetContactNumber = Db.checkUserContactNumber(email.trim())
+        val resultSetContactNumber = DbHelper.checkUserContactNumber(email.trim())
         if (resultSetContactNumber.isBeforeFirst) {
             resultSetContactNumber.close()
             return 5 // USED NUMBER
@@ -49,7 +49,7 @@ class RegistrationViewModel : ViewModel() {
         val bytes = MessageDigest.getInstance("SHA-256").digest(password.trim().toByteArray())
         val passwordHash = bytes.joinToString("") { "%02x".format(it) }
 
-        Db.addUser(
+        DbHelper.addUser(
             login = login.trim(),
             password = passwordHash,
             email = email.trim(),
