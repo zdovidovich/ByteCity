@@ -59,6 +59,7 @@ fun ProductItemPreScreen(
         key = product.idProduct.toString()
     )
     productItemViewModel.getRating(product)
+
     val viewState by productItemViewModel.productItemState
 
 
@@ -104,8 +105,7 @@ fun ProductItem(
             .fillMaxSize()
             .clip(RoundedCornerShape(12.dp))
             .background(Color.LightGray)
-            .height(320.dp)
-        , verticalArrangement = Arrangement.SpaceBetween
+            .height(320.dp), verticalArrangement = Arrangement.SpaceBetween
     ) {
         Image(
             painter = rememberAsyncImagePainter(
@@ -137,10 +137,15 @@ fun ProductItem(
                 text = "$rating",
                 color = Color.Yellow,
                 style = TextStyle(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(top = 4.dp, start = 8.dp).clickable {
-                    navHostController.currentBackStackEntry?.savedStateHandle?.set("productsforreview", product.idProduct)
-                    navHostController.navigate(Screens.ReviewPage.route)
-                }
+                modifier = Modifier
+                    .padding(top = 4.dp, start = 8.dp)
+                    .clickable {
+                        navHostController.currentBackStackEntry?.savedStateHandle?.set(
+                            "productsforreview",
+                            product.idProduct
+                        )
+                        navHostController.navigate(Screens.ReviewPage.route)
+                    }
             )
         }
         var price = "${product.price} BYN"
@@ -225,6 +230,7 @@ fun ProductItem(
                                     message = "Не в продаже"
                                 )
                             }
+
                             1 -> {
                                 snackbarHostState.currentSnackbarData?.dismiss()
                                 snackbarHostState.showSnackbar(
@@ -240,12 +246,13 @@ fun ProductItem(
                                     actionLabel = "В корзину",
                                     duration = SnackbarDuration.Short
                                 )
-                                if(res == SnackbarResult.ActionPerformed){
-                                    withContext(Dispatchers.Main){
+                                if (res == SnackbarResult.ActionPerformed) {
+                                    withContext(Dispatchers.Main) {
                                         navHostController.navigate(Screens.CartProductScreens.route)
                                     }
                                 }
                             }
+
                             else -> {
                                 snackbarHostState.currentSnackbarData?.dismiss()
                                 snackbarHostState.showSnackbar(

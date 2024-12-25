@@ -1,6 +1,5 @@
 package com.example.bytecity.Navigation
 
-import android.content.Context
 import androidx.compose.material3.DrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -30,7 +29,7 @@ import com.example.bytecity.view.SearchPage.SearchPage
 import java.util.Date
 
 @Composable
-fun Navigation(navController: NavHostController, drawerState: DrawerState, context:Context) {
+fun Navigation(navController: NavHostController, drawerState: DrawerState) {
     val scope = rememberCoroutineScope()
     NavHost(navController = navController, startDestination = Screens.MainContentScreens.route) {
         composable(route = Screens.MainContentScreens.route) {
@@ -75,7 +74,11 @@ fun Navigation(navController: NavHostController, drawerState: DrawerState, conte
                 navController.navigateUp()
                 //TODO but i don't know how (smth's wrong with navigation)
             } else {
-                ProductPreScreen(product = product, navHostController = navController)
+                ProductPreScreen(
+                    product = product,
+                    navHostController = navController,
+                    scope = scope
+                )
             }
         }
         composable(route = Screens.FavouriteProductScreens.route) {

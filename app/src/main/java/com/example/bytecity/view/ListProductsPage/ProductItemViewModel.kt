@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bytecity.businessClasses.Product
 import com.example.bytecity.model.DbHelper
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ProductItemViewModel : ViewModel() {
@@ -16,8 +15,8 @@ class ProductItemViewModel : ViewModel() {
 
 
     fun getRating(product: Product) {
-        try {
-            viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
+            try {
                 val resultSetRating = DbHelper.getRating(product)
                 if (resultSetRating.isBeforeFirst) {
                     var res = 0.0f
@@ -36,18 +35,18 @@ class ProductItemViewModel : ViewModel() {
                 _productItemState.value = _productItemState.value.copy(
                     loading = false
                 )
+            } catch (ex: Exception) {
+                _productItemState.value = _productItemState.value.copy(
+                    loading = false,
+                    error = ex.message
+                )
+
             }
-
-        } catch (ex: Exception) {
-            _productItemState.value = _productItemState.value.copy(
-                loading = false,
-                error = ex.message
-            )
-
         }
     }
 
-    fun addWishList(product: Product): Int {
+
+    suspend fun addWishList(product: Product): Int {
         try {
             val resultSetWishList = DbHelper.getProductWishList(product)
             if (resultSetWishList.isBeforeFirst) {
@@ -65,7 +64,7 @@ class ProductItemViewModel : ViewModel() {
     }
 
 
-    fun addCart(product: Product): Int {
+    suspend fun addCart(product: Product): Int {
         if (product.inStock == 0) return 2 // NOT ON SALE
 
         try {

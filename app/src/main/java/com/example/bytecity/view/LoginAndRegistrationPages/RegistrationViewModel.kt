@@ -7,15 +7,23 @@ import java.security.MessageDigest
 class RegistrationViewModel : ViewModel() {
 
 
-    fun addUser(login: String, email: String, contactNumber: String, password: String): Int {
+    suspend fun addUser(
+        login: String,
+        email: String,
+        contactNumber: String,
+        password: String
+    ): Int {
 
         when {
             login.isEmpty() -> {
                 return 6 //EMPTY LOGIN
             }
-            !email.trim().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()) -> {
+
+            !email.trim()
+                .matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()) -> {
                 return 3 // WRONG EMAIL
             }
+
             !contactNumber.trim().matches("^\\+[0-9]{12}$".toRegex()) -> {
                 return 4 // WRONG NUMBER
             }

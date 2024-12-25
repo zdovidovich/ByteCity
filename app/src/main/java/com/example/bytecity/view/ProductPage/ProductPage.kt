@@ -30,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +47,7 @@ import com.example.bytecity.model.Screens
 import com.example.bytecity.model.User
 import com.example.bytecity.view.MainComposables.MainSnackbar
 import com.example.bytecity.view.MainComposables.TopBar
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -59,10 +59,13 @@ import java.util.Locale
 fun ProductPreScreen(
     product: Product,
     modifier: Modifier = Modifier,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    scope: CoroutineScope
 ) {
     val productPageViewModel: ProductPageViewModel = viewModel()
-    productPageViewModel.make(product)
+    scope.launch {
+        productPageViewModel.make(product)
+    }
     val viewState by productPageViewModel.productState
     Box(modifier = Modifier.fillMaxSize()) {
         when {
@@ -71,7 +74,7 @@ fun ProductPreScreen(
             }
 
             else -> {
-                ProductPage(product, viewState, productPageViewModel, navHostController)
+                ProductPage(product, viewState, productPageViewModel, navHostController, scope)
             }
         }
     }
@@ -83,10 +86,10 @@ fun ProductPage(
     product: Product,
     viewState: ProductPageViewModel.ProductState,
     productPageViewModel: ProductPageViewModel,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    scope: CoroutineScope
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
     var favouriteString by remember { mutableStateOf(if (viewState.isInFavourite) "В Избранном" else "В Избранное") }
     var cartString by remember { mutableStateOf(if (viewState.isInCart) "В Корзине" else "В Корзину") }
@@ -126,11 +129,14 @@ fun ProductPage(
                                 )
                             }
                         } else {
-                            scope.launch(Dispatchers.IO) {
+                            scope.launch {
                                 when (productPageViewModel.addWishList(product)) {
                                     1 -> {
                                         favouriteString = "В избранное"
-                                        navHostController.previousBackStackEntry?.savedStateHandle?.set("producttofavourite", product)
+                                        navHostController.previousBackStackEntry?.savedStateHandle?.set(
+                                            "producttofavourite",
+                                            product
+                                        )
                                         snackbarHostState.currentSnackbarData?.dismiss()
                                         snackbarHostState.showSnackbar(
                                             "Удалено из избранного",
@@ -181,7 +187,7 @@ fun ProductPage(
                                 )
                             }
                         } else {
-                            scope.launch(Dispatchers.IO) {
+                            scope.launch {
                                 when (productPageViewModel.addCart(product)) {
                                     2 -> {
                                         snackbarHostState.currentSnackbarData?.dismiss()
@@ -284,23 +290,3 @@ fun ProductPage(
     }
 
 }
-
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun ProductPagePreview() {
-//    val str =
-//        "https://256bit.by/upload/resize_cache/iblock/e9b/450_450_140cd750bba9870f18aada2478b24840a/o2uw77dvg8gm10blc9p0nvjcmg8a7ig2.jpeg"
-//    val product: Product = Product(
-//        1,
-//        "Intel",
-//        "Core i9-11900K",
-//        "Processor",
-//        539.99,
-//        str,
-//        10,
-//        Date(2222L)
-//    )
-////    ProductPreScreen(product = product)
-//
-//}

@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.bytecity.businessClasses.ProductForCart
@@ -48,9 +49,10 @@ fun CartPreScreen(
 
     ) {
     val cartViewModel: CartViewModel = viewModel()
-
+    cartViewModel.viewModelScope.launch {
+        cartViewModel.getProductsFromCart()
+    }
     val viewState by cartViewModel.cartState
-
     Box(modifier = Modifier.fillMaxSize()) {
         when {
             viewState.loading -> {
@@ -87,7 +89,6 @@ fun CartPage(
         SnackbarHostState()
     }
 
-
     Scaffold(modifier = Modifier.padding(8.dp),
         topBar = {
             TopBar(navIcon = {
@@ -103,7 +104,9 @@ fun CartPage(
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MainColor.AppColor.value),
                     onClick = {
-                        cartViewModel.cleanCart()
+                        cartViewModel.viewModelScope.launch {
+                            cartViewModel.cleanCart()
+                        }
                     }) {
                     Text("Очистить корзину")
                 }

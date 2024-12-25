@@ -7,8 +7,8 @@ import java.security.MessageDigest
 
 class LoginViewModel : ViewModel() {
 
-    fun checkData(login: String, password: String): Int {
-        when{
+    suspend fun checkData(login: String, password: String): Int {
+        when {
             login.isEmpty() ->
                 return 0 // Empty login
             password.isEmpty() ->

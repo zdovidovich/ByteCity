@@ -45,12 +45,12 @@ class MainActivity : ComponentActivity() {
                     }
                     if(currentRoute == null || currentRoute in ScreenWithModalNavigationDrawer.AllScreens.list)
                     {
-                        MainNavDrawer(drawerState, navController){
-                            navController, drawerState -> Navigation(navController = navController, drawerState = drawerState, context = this)
+                        MainNavDrawer(drawerState, navController){ navController, drawerState ->
+                            Navigation(navController = navController, drawerState = drawerState)
                         }
                     }
                     else{
-                        Navigation(navController = navController, drawerState = drawerState, context = this)
+                        Navigation(navController = navController, drawerState = drawerState)
                     }
 
 

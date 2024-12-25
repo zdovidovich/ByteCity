@@ -3,12 +3,9 @@ package com.example.bytecity.view.ProductPage
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.bytecity.businessClasses.Product
 import com.example.bytecity.model.DbHelper
 import com.example.bytecity.model.User
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class ProductPageViewModel : ViewModel() {
 
@@ -16,66 +13,63 @@ class ProductPageViewModel : ViewModel() {
     val productState: State<ProductState> = _productState
 
 
-    fun make(product: Product) {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (product.type == "PC") {
-                makePC(product)
-                return@launch
-            }
-            val res: MutableList<MutableList<String>> = mutableListOf()
-            if (product.type == "Cooling") {
-                val resultSetSockets = DbHelper.getInfoAboutCooling(product)
-                resultSetSockets.next()
-                val key = resultSetSockets.getString("socket")
-                if (!resultSetSockets.wasNull()) {
-                    val tmp = mutableListOf<String>()
-                    tmp.add("Сокет(-ы)")
-                    tmp.add(key)
-                    res.add(tmp)
-                }
-            } else if (product.type == "PCCase") {
-                val resultSetSockets = DbHelper.getInfoAboutFormFactors(product)
-                resultSetSockets.next()
-                val key = resultSetSockets.getString("formFactors")
-                if (!resultSetSockets.wasNull()) {
-                    val tmp = mutableListOf<String>()
-                    tmp.add("Форм-фактор(-ы)")
-                    tmp.add(key)
-                    res.add(tmp)
-                }
-            }
-            val resultSetColumnsAndComments = DbHelper.getColumnsAndCommentsInfo(product.type)
-            val resultSetValues = DbHelper.getInfo(product)
-            if (resultSetValues.isBeforeFirst && resultSetColumnsAndComments.isBeforeFirst) {
-                resultSetValues.next()
-                while (resultSetColumnsAndComments.next()) {
-                    val value =
-                        resultSetValues.getObject(resultSetColumnsAndComments.getString("COLUMN_NAME"))
-                            ?: continue
-                    val key = resultSetColumnsAndComments.getString("COLUMN_COMMENT")
-                    if (key == "") continue
-                    val tmp = mutableListOf<String>()
-                    tmp.add(key)
-                    tmp.add(value.toString())
-                    res.add(tmp)
-                }
-            }
-            resultSetValues.close()
-            resultSetColumnsAndComments.close()
-
-            val booleans = findProducts(product)
-
-            _productState.value = _productState.value.copy(
-                loading = false,
-                keysAndValues = res,
-                isInFavourite = booleans.first,
-                isInCart = booleans.second
-            )
+    suspend fun make(product: Product) {
+        if (product.type == "PC") {
+            makePC(product)
+            return
         }
+        val res: MutableList<MutableList<String>> = mutableListOf()
+        if (product.type == "Cooling") {
+            val resultSetSockets = DbHelper.getInfoAboutCooling(product)
+            resultSetSockets.next()
+            val key = resultSetSockets.getString("socket")
+            if (!resultSetSockets.wasNull()) {
+                val tmp = mutableListOf<String>()
+                tmp.add("Сокет(-ы)")
+                tmp.add(key)
+                res.add(tmp)
+            }
+        } else if (product.type == "PCCase") {
+            val resultSetSockets = DbHelper.getInfoAboutFormFactors(product)
+            resultSetSockets.next()
+            val key = resultSetSockets.getString("formFactors")
+            if (!resultSetSockets.wasNull()) {
+                val tmp = mutableListOf<String>()
+                tmp.add("Форм-фактор(-ы)")
+                tmp.add(key)
+                res.add(tmp)
+            }
+        }
+        val resultSetColumnsAndComments = DbHelper.getColumnsAndCommentsInfo(product.type)
+        val resultSetValues = DbHelper.getInfo(product)
+        if (resultSetValues.isBeforeFirst && resultSetColumnsAndComments.isBeforeFirst) {
+            resultSetValues.next()
+            while (resultSetColumnsAndComments.next()) {
+                val value =
+                    resultSetValues.getObject(resultSetColumnsAndComments.getString("COLUMN_NAME"))
+                        ?: continue
+                val key = resultSetColumnsAndComments.getString("COLUMN_COMMENT")
+                if (key == "") continue
+                val tmp = mutableListOf<String>()
+                tmp.add(key)
+                tmp.add(value.toString())
+                res.add(tmp)
+            }
+        }
+        resultSetValues.close()
+        resultSetColumnsAndComments.close()
+        val booleans = findProducts(product)
+        _productState.value = _productState.value.copy(
+            loading = false,
+            keysAndValues = res,
+            isInFavourite = booleans.first,
+            isInCart = booleans.second
+        )
     }
 
-    private fun makePC(product: Product) {
+    private suspend fun makePC(product: Product) {
         val resultSetCommentsAndColumns = DbHelper.getColumnsAndCommentsInfo(product.type)
+
         if (!resultSetCommentsAndColumns.isBeforeFirst) {
             _productState.value = _productState.value.copy(
                 loading = false
@@ -84,6 +78,7 @@ class ProductPageViewModel : ViewModel() {
         }
         val res: MutableList<MutableList<String>> = mutableListOf()
         val resultSetValues = DbHelper.getInfo(product)
+
         if (resultSetValues.isBeforeFirst && resultSetCommentsAndColumns.isBeforeFirst) {
             resultSetValues.next()
             while (resultSetCommentsAndColumns.next()) {
@@ -115,7 +110,7 @@ class ProductPageViewModel : ViewModel() {
         )
     }
 
-    private fun findProducts(product: Product): Pair<Boolean, Boolean> {
+    private suspend fun findProducts(product: Product): Pair<Boolean, Boolean> {
         if (User.Id.id == -1) return Pair(false, false)
         val resultSetProductInFavourite = DbHelper.getProductInFavourite(product)
         val resultSetProductInCart = DbHelper.getProductInCart(product)
@@ -135,7 +130,7 @@ class ProductPageViewModel : ViewModel() {
     }
 
 
-    fun addWishList(product: Product): Int {
+    suspend fun addWishList(product: Product): Int {
         try {
             val resultSetWishList = DbHelper.getProductWishList(product)
             if (resultSetWishList.isBeforeFirst) {
@@ -146,16 +141,14 @@ class ProductPageViewModel : ViewModel() {
             DbHelper.addProductToWishList(product)
             resultSetWishList.close()
             return 0 //ADDED
-
         } catch (ex: Exception) {
             return -1 //ERROR
         }
     }
 
 
-    fun addCart(product: Product): Int {
-        if (product.inStock == 0) return 2 // NOT ON SALE
-
+    suspend fun addCart(product: Product): Int {
+        if (product.inStock <= 0) return 2 // NOT ON SALE
         try {
             val resultSetCart = DbHelper.getProductCart(product)
             if (resultSetCart.isBeforeFirst) {
@@ -166,7 +159,6 @@ class ProductPageViewModel : ViewModel() {
             DbHelper.addProductToCart(product)
             resultSetCart.close()
             return 0 //ADDED
-
         } catch (ex: Exception) {
             return -1 //ERROR
         }

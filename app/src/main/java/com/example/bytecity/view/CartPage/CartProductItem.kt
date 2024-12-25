@@ -43,7 +43,7 @@ fun CartProductItem(
     productForCart: ProductForCart,
     navHostController: NavHostController,
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
-    canBeChanged:Boolean = true,
+    canBeChanged: Boolean = true,
     onPlusOneProduct: () -> Unit = {},
     onMinusOneProduct: () -> Unit = {},
     onDeleteProduct: () -> Unit = {},
@@ -98,11 +98,11 @@ fun CartProductItem(
             ) {
                 if (canBeChanged) {
                     IconButton(onClick = {
-                        val res = cartItemViewModel.addOneProduct(
-                            productForCart = productForCart,
-                            frontAddOneProduct = onPlusOneProduct
-                        )
                         scope.launch {
+                            val res = cartItemViewModel.addOneProduct(
+                                productForCart = productForCart,
+                                frontAddOneProduct = onPlusOneProduct
+                            )
                             when (res) {
                                 1 -> {
                                     snackbarHostState.currentSnackbarData?.dismiss()
@@ -126,13 +126,13 @@ fun CartProductItem(
                     }) {
                         Icon(Icons.Filled.KeyboardArrowUp, "Больше")
                     }
-                Text("${productForCart.qty}")
+                    Text("${productForCart.qty}")
                     IconButton(onClick = {
-                        val res = cartItemViewModel.removeOneProduct(
-                            productForCart = productForCart,
-                            frontRemoveOneProduct = onMinusOneProduct
-                        )
                         scope.launch {
+                            val res = cartItemViewModel.removeOneProduct(
+                                productForCart = productForCart,
+                                frontRemoveOneProduct = onMinusOneProduct
+                            )
                             when (res) {
                                 1 -> {
                                     snackbarHostState.currentSnackbarData?.dismiss()
@@ -155,8 +155,7 @@ fun CartProductItem(
                     }) {
                         Icon(Icons.Filled.KeyboardArrowDown, "Меньше")
                     }
-                }
-                else{
+                } else {
                     Text("Количество: ${productForCart.qty}")
                 }
             }
@@ -164,12 +163,14 @@ fun CartProductItem(
             buttonMakeReview()
         }
 
-        if(canBeChanged) {
+        if (canBeChanged) {
             IconButton(onClick = {
-                cartItemViewModel.removeProductFromCart(
-                    productForCart = productForCart,
-                    frontRemoveProductFromCart = onDeleteProduct
-                )
+                scope.launch {
+                    cartItemViewModel.removeProductFromCart(
+                        productForCart = productForCart,
+                        frontRemoveProductFromCart = onDeleteProduct
+                    )
+                }
             }) {
                 Icon(Icons.Filled.Delete, "Удалить")
             }

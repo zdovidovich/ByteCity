@@ -9,8 +9,6 @@ import com.example.bytecity.model.DbHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class FavouriteViewModel : ViewModel() {
 
@@ -23,17 +21,17 @@ class FavouriteViewModel : ViewModel() {
 
 
     private fun getFavouriteProducts() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try{
-            val resultSetProductIds = DbHelper.getAllProductWishList()
-            if (!resultSetProductIds.isBeforeFirst) {
-                resultSetProductIds.close()
-                withContext(Dispatchers.Main) {
-                    _favouriteState.value = _favouriteState.value.copy(
-                        loading = false
-                    )
-                }
-                return@launch
+        viewModelScope.launch {
+            try {
+                val resultSetProductIds = DbHelper.getAllProductWishList()
+                if (!resultSetProductIds.isBeforeFirst) {
+                    resultSetProductIds.close()
+                    withContext(Dispatchers.Main) {
+                        _favouriteState.value = _favouriteState.value.copy(
+                            loading = false
+                        )
+                    }
+                    return@launch
             }
             val productsInWishList = mutableListOf<Product>()
             while (resultSetProductIds.next()) {
@@ -49,29 +47,17 @@ class FavouriteViewModel : ViewModel() {
                     discountValue = resultSetDiscount.getDouble("value")
                     resultSetDiscount.close()
                 }
-
-                val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-                val rdate = formatter.parse(resultSetProduct.getDate("releaseDate").toString())
-                val product = Product(
-                    idProduct = id,
-                    brand = resultSetProduct.getString("brand"),
-                    model = resultSetProduct.getString("model"),
-                    type = resultSetProduct.getString("type"),
-                    price =  String.format("%.2f", resultSetProduct.getDouble("price") * (1 - discountValue)).replace(",", ".").toDouble(),
-                    imageProduct = resultSetProduct.getString("imageProduct"),
-                    inStock = resultSetProduct.getInt("inStock"),
-                    releaseDate = rdate!!
-                )
+                val product = Product.parse(resultSetProduct, discountValue)
                 productsInWishList.add(product)
                 resultSetProduct.close()
             }
             resultSetProductIds.close()
-            withContext(Dispatchers.Main){
+//            withContext(Dispatchers.Main){
                 _favouriteState.value = _favouriteState.value.copy(
                     loading = false,
                     products = productsInWishList
                 )
-            }
+//            }
         }
             catch (e:Exception){
                 _favouriteState.value = _favouriteState.value.copy(
@@ -89,8 +75,6 @@ class FavouriteViewModel : ViewModel() {
             products = newProducts
         )
     }
-
-
 
 
 

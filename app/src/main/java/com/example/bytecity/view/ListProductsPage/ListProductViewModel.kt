@@ -17,8 +17,6 @@ class ListProductViewModel : ViewModel() {
     private val _pager = MutableStateFlow<PagingData<Product>>(PagingData.empty())
     val pager: StateFlow<PagingData<Product>> = _pager
 
-
-
     fun findProducts(type:String, context: Context){
         val flow = Pager(
             config = PagingConfig(pageSize = 15),

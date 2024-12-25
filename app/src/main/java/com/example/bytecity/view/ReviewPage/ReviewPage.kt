@@ -30,6 +30,7 @@ import com.example.bytecity.view.MainComposables.TopBar
 fun ReviewPreScreen(idProduct: Int, navHostController: NavHostController) {
     val reviewViewModel: ReviewViewModel = viewModel()
     reviewViewModel.getReviews(idProduct)
+
     val viewState by reviewViewModel.reviewState
     Box(modifier = Modifier.fillMaxSize()) {
         when {
