@@ -12,9 +12,7 @@ class MakeReviewViewModel : ViewModel() {
         rating: Float, text: String
     ): Int {
         return try {
-            withContext(Dispatchers.IO) {
-                DbHelper.uploadReview(idProduct, rating, text)
-            }
+            DbHelper.uploadReview(idProduct, rating, text)
             200
         } catch (ex: Exception) {
             1
