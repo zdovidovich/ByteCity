@@ -332,7 +332,7 @@ class Db {
                 "INSERT INTO OrderDetails (registrationDate, status) VALUES (?, ?)"
             val statementFirst = connection.connection.prepareStatement(queryFirst).apply {
                 setDate(1, date)
-                setString(2, "Оформлен")
+                setString(2, "Checked out")
             }
             statementFirst.executeUpdate()
             val querySecond =
@@ -534,12 +534,6 @@ class Db {
             }
             statement.executeUpdate()
         }
-
-        fun checkCart() {
-
-        }
-
-
     }
 
 }
