@@ -27,7 +27,7 @@ class MakeOrderViewModel : ViewModel() {
                 connection.connect(context)
                 connection.connection.autoCommit = false
                 connection.connection.transactionIsolation =
-                    Connection.TRANSACTION_REPEATABLE_READ
+                    Connection.TRANSACTION_SERIALIZABLE
                 res = DbHelper.insertOrder(
                     productsForCart = products,
                     date = Date.valueOf(LocalDate.now().toString()),
