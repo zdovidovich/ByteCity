@@ -64,8 +64,6 @@ dependencies {
     //Navigation
     implementation("androidx.navigation:navigation-compose:2.8.5")
 
-    //Json to Kotlin object mapping
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     //Paging
     implementation("androidx.paging:paging-compose:3.3.5")
