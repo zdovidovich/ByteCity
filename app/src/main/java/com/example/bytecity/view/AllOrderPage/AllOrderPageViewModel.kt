@@ -18,12 +18,16 @@ class AllOrderPageViewModel : ViewModel() {
     private val _pager = MutableStateFlow<PagingData<Order>>(PagingData.empty())
     val pager: StateFlow<PagingData<Order>> = _pager
 
-    fun findProducts(context: Context){
+    fun findProducts(context: Context) {
         val flow = Pager(
-            config = PagingConfig(pageSize = 3),
+            config = PagingConfig(
+                pageSize = 4,
+                initialLoadSize = 4,
+                prefetchDistance = 3
+            ),
             pagingSourceFactory = { AllOrderPagingSource(context) }).flow
         viewModelScope.launch {
-            flow.collectLatest{
+            flow.collectLatest {
                 _pager.value = it
             }
         }

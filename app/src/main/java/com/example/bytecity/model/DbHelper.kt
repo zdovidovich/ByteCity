@@ -216,10 +216,13 @@ class DbHelper {
             connection: DbConnection = DbConn,
             category: String, limit: Int, offset: Int
         ): ResultSet = withContext(Dispatchers.IO) {
+            val inQ = if (category.isEmpty()) "" else " type = ? AND"
             val query =
-                "SELECT * FROM Product WHERE type = ? AND inStock > 0 LIMIT $limit OFFSET $offset"
+                "SELECT * FROM Product WHERE$inQ inStock > 0 LIMIT $limit OFFSET $offset"
             val statement = connection.connection.prepareStatement(query).apply {
-                setString(1, category)
+                if (category.isNotEmpty()) {
+                    setString(1, category)
+                }
             }
             return@withContext statement.executeQuery()
         }

@@ -10,21 +10,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.ResultSet
 
-class SearchProductsPagingSource(val text:String, val context:Context): PagingSource<Int, Product>() {
+class SearchProductsPagingSource(val text: String, val context: Context) :
+    PagingSource<Int, Product>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Product> {
         val page = params.key ?: 0
         val pageSize = params.loadSize
+        var connection: DbConnection? = null
         return try {
-            val connection = DbConnection()
+            connection = DbConnection()
             withContext(Dispatchers.IO) {
                 connection.connect(context)
             }
-            val resultSetListProduct: ResultSet
-            withContext(Dispatchers.IO) {
-                resultSetListProduct =
-                    DbHelper.getProductsBySearching(text, connection, pageSize, page * pageSize)
-            }
+            val resultSetListProduct: ResultSet =
+                DbHelper.getProductsBySearching(text, connection, pageSize, page * pageSize)
+
             val allProducts = mutableListOf<Product>()
             while (resultSetListProduct.next()) {
 
@@ -36,23 +36,21 @@ class SearchProductsPagingSource(val text:String, val context:Context): PagingSo
                     discountValue = resultSetDiscount.getDouble("value")
                     resultSetDiscount.close()
                 }
-
                 val product = Product.parse(resultSetListProduct, discountValue)
                 allProducts.add(product)
             }
             resultSetListProduct.close()
-            connection.connection.close()
             LoadResult.Page(
                 data = allProducts,
                 prevKey = if (page == 0) null else page - 1,
                 nextKey = if (allProducts.isEmpty()) null else page + 1
             )
-        }
-        catch (ex:Exception){
+        } catch (ex: Exception) {
             LoadResult.Error(ex)
 
+        } finally {
+            connection?.connection?.close()
         }
-
     }
 
 

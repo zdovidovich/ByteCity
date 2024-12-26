@@ -19,7 +19,11 @@ class ListProductViewModel : ViewModel() {
 
     fun findProducts(type:String, context: Context){
         val flow = Pager(
-            config = PagingConfig(pageSize = 15),
+            config = PagingConfig(
+                pageSize = 15,
+                initialLoadSize = 15,
+                prefetchDistance = 5
+            ),
             pagingSourceFactory = { ProductPagingSource(type, context) }).flow
         viewModelScope.launch {
             flow.collectLatest{

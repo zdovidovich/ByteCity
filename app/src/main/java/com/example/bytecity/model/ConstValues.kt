@@ -19,7 +19,8 @@ sealed class Category(val categories: Map<String, String>) {
         mapOf(
             "Телефоны" to "Phone",
             "Комппьюетры" to "PC",
-            "Комплектующие" to "Components"
+            "Комплектующие" to "Components",
+            "Все товары" to ""
         )
     )
 

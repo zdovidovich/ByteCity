@@ -19,9 +19,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +49,17 @@ fun SearchPage(navHostController: NavHostController) {
     }
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val listState = rememberLazyGridState()
+    val scope = rememberCoroutineScope()
+
+
+    val viewModel: SearchPageViewModel = viewModel()
+    val context = LocalContext.current
+    val products = viewModel.pager.collectAsLazyPagingItems()
+
+    var startSearch by remember {
+        mutableStateOf(false)
+    }
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -60,19 +73,29 @@ fun SearchPage(navHostController: NavHostController) {
         },
         snackbarHost = {
             MainSnackbar(snackbarHostState = snackbarHostState)
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    scope.launch {
+                        listState.scrollToItem(0)
+                    }
+                }, modifier = Modifier
+                    .padding(16.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                containerColor = MainColor.AppColor.value
+            ) {
+                Icon(Icons.Filled.KeyboardArrowUp, "Наверх", tint = Color.White)
+            }
         }
+
     ) {
-        val viewModel: SearchPageViewModel = viewModel()
-        val context = LocalContext.current
         LaunchedEffect(text.value) {
-            viewModel.getProducts(text.value, context)
+            if (startSearch) {
+                viewModel.getProducts(text.value, context)
+            }
+            startSearch = true
         }
-
-        val products = viewModel.pager.collectAsLazyPagingItems()
-        val listState = rememberLazyGridState()
-        val scope = rememberCoroutineScope()
-
-
 
         Box(
             modifier = Modifier
@@ -85,20 +108,30 @@ fun SearchPage(navHostController: NavHostController) {
                 }
 
                 products.loadState.refresh is LoadState.Error -> {
-                    Text(text = "Ошибка, повторите позже", modifier=Modifier.align(
-                        Alignment.Center), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                    Text(
+                        text = "Ошибка, повторите позже", modifier = Modifier.align(
+                            Alignment.Center
+                        ), fontSize = 16.sp, fontWeight = FontWeight.Medium
+                    )
                 }
 
                 text.value.isEmpty() -> {
-                    Text(text = "Введите что-нибудь в поисковике :)", modifier=Modifier.align(
-                        Alignment.Center), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                    Text(
+                        text = "Введите что-нибудь в поисковике :)", modifier = Modifier.align(
+                            Alignment.Center
+                        ), fontSize = 16.sp, fontWeight = FontWeight.Medium
+                    )
                 }
 
                 products.itemCount == 0 -> {
-                    Text(text = "Ничего не найдено", modifier=Modifier.align(
-                        Alignment.Center), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                    Text(
+                        text = "Ничего не найдено", modifier = Modifier.align(
+                            Alignment.Center
+                        ), fontSize = 16.sp, fontWeight = FontWeight.Medium
+                    )
 
                 }
+
                 else -> {
                     LazyVerticalGrid(
                         state = listState,
@@ -113,20 +146,6 @@ fun SearchPage(navHostController: NavHostController) {
                             )
                         }
                     }
-                    FloatingActionButton(
-                        onClick = {
-                            scope.launch {
-                                listState.scrollToItem(0)
-                            }
-                        }, modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(16.dp)
-                            .clip(RoundedCornerShape(8.dp)),
-                        containerColor = MainColor.AppColor.value
-                    ) {
-                        Icon(Icons.Filled.KeyboardArrowUp, "Наверх", tint = Color.White)
-                    }
-
                 }
             }
         }

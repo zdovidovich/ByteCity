@@ -13,16 +13,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class SearchPageViewModel: ViewModel() {
+class SearchPageViewModel : ViewModel() {
     private val _pager = MutableStateFlow<PagingData<Product>>(PagingData.empty())
     val pager: StateFlow<PagingData<Product>> = _pager
 
-    fun getProducts(text:String, context: Context){
+    fun getProducts(text: String, context: Context) {
         val flow = Pager(
-            config = PagingConfig(pageSize = 15),
+            config = PagingConfig(
+                pageSize = 10,
+                initialLoadSize = 10,
+                prefetchDistance = 5
+            ),
             pagingSourceFactory = { SearchProductsPagingSource(text, context) }).flow
         viewModelScope.launch {
-            flow.collectLatest{
+            flow.collectLatest {
                 _pager.value = it
             }
         }
