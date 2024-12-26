@@ -47,7 +47,10 @@ fun SearchPage(navHostController: NavHostController) {
     }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    Scaffold(modifier = Modifier.fillMaxSize().padding(8.dp),
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
         topBar = {
             SearchingTopBar(text = text) {
                 IconButton(onClick = { navHostController.navigateUp() }) {
@@ -68,6 +71,7 @@ fun SearchPage(navHostController: NavHostController) {
         val products = viewModel.pager.collectAsLazyPagingItems()
         val listState = rememberLazyGridState()
         val scope = rememberCoroutineScope()
+
 
 
         Box(
@@ -95,7 +99,6 @@ fun SearchPage(navHostController: NavHostController) {
                         Alignment.Center), fontSize = 16.sp, fontWeight = FontWeight.Medium)
 
                 }
-
                 else -> {
                     LazyVerticalGrid(
                         state = listState,
