@@ -19,32 +19,31 @@ class MakeOrderViewModel : ViewModel() {
     suspend fun makeOrder(
         context: Context,
         products: List<ProductForCart>,
-    ): Int {
+    ): Int = withContext(Dispatchers.IO) {
         val connection = DbConnection()
-        return try {
-            val res: Int
-            withContext(Dispatchers.IO) {
-                connection.connect(context)
-                connection.connection.autoCommit = false
-                connection.connection.transactionIsolation =
-                    Connection.TRANSACTION_SERIALIZABLE
-                res = DbHelper.insertOrder(
-                    productsForCart = products,
-                    date = Date.valueOf(LocalDate.now().toString()),
-                    connection = connection
-                )
-                connection.connection.autoCommit = true
+        return@withContext try {
+            connection.connect(context)
+            connection.connection.autoCommit = false
+            connection.connection.transactionIsolation =
+                Connection.TRANSACTION_SERIALIZABLE
 
-            }
+            val res = DbHelper.insertOrder(
+                productsForCart = products,
+                date = Date.valueOf(LocalDate.now().toString()),
+                connection = connection
+            )
+            connection.connection.autoCommit = true
+
             if (res != 200) {
                 connection.connection.close()
-                return 2
+                return@withContext 2
             }
-            withContext(Dispatchers.IO) {
-                DbHelper.cleanCart(connection)
-            }
+            DbHelper.cleanCart(connection)
+
             connection.connection.close()
-            return 200
+
+            return@withContext 200
+
         } catch (ex: Exception) {
             Log.d(ex.message, ex.message.toString())
             connection.connection.rollback()

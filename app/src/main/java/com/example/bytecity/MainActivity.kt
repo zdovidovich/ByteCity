@@ -28,11 +28,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ByteCityTheme {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    DbConn.connect(this@MainActivity)
+                }
                 val navController = rememberNavController()
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                 val currentBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = currentBackStackEntry?.destination?.route
-
 
 
                 // A surface container using the 'background' color from the theme
@@ -40,19 +42,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        DbConn.connect(this@MainActivity)
-                    }
-                    if(currentRoute == null || currentRoute in ScreenWithModalNavigationDrawer.AllScreens.list)
-                    {
+
+                    if(currentRoute == null || currentRoute in ScreenWithModalNavigationDrawer.AllScreens.list) {
                         MainNavDrawer(drawerState, navController){ navController, drawerState ->
                             Navigation(navController = navController, drawerState = drawerState)
                         }
-                    }
-                    else{
+                    } else{
                         Navigation(navController = navController, drawerState = drawerState)
                     }
-
 
                 }
             }

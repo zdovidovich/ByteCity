@@ -38,12 +38,13 @@ import kotlinx.coroutines.launch
 fun OrderPage(
     order: Order,
     navHostController: NavHostController,
-    scope:CoroutineScope
+    scope: CoroutineScope
 ) {
-    val snackbarHostState = remember{ SnackbarHostState() }
-    val orderViewModel:OrderViewModel = viewModel()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val orderViewModel: OrderViewModel = viewModel()
 
-    Scaffold(modifier = Modifier.padding(8.dp),
+    Scaffold(
+        modifier = Modifier.padding(8.dp),
         topBar = {
             TopBar(navIcon = {
                 IconButton(onClick = {
@@ -53,12 +54,14 @@ fun OrderPage(
                 }
             })
         },
-        snackbarHost = {MainSnackbar(snackbarHostState = snackbarHostState)}
+        snackbarHost = { MainSnackbar(snackbarHostState = snackbarHostState) }
     ) {
-        Column(modifier= Modifier
-            .fillMaxSize()
-            .padding(it)
-            .padding(8.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+                .padding(8.dp)
+        ) {
             Text(
                 text = "Дата заказа: ",
                 fontSize = 16.sp,
@@ -96,33 +99,40 @@ fun OrderPage(
                         navHostController = navHostController,
                         canBeChanged = false,
                         buttonMakeReview = {
-                            Button(onClick = {
-                                scope.launch {
-                                    when(orderViewModel.checkReview(product.product.idProduct)){
-                                        200 ->{
-                                            navHostController.currentBackStackEntry?.savedStateHandle?.set("productformakereview", product.product.idProduct)
-                                            navHostController.navigate(Screens.MakeReviewPage.route)
-                                        }
-                                        1 ->{
-                                            snackbarHostState.currentSnackbarData?.dismiss()
-                                            snackbarHostState.showSnackbar(
-                                                message = "Вы уже оставляли отзыв на этот товар"
-                                            )
-                                        }
-                                        else ->{
-                                            snackbarHostState.currentSnackbarData?.dismiss()
-                                            snackbarHostState.showSnackbar(
-                                                message = "Ошибка, повторите позже"
-                                            )
-                                        }
-                                    }
+                            if (order.status == "Received") {
+                                Button(
+                                    onClick = {
+                                        scope.launch {
+                                            when (orderViewModel.checkReview(product.product.idProduct)) {
+                                                200 -> {
+                                                    navHostController.currentBackStackEntry?.savedStateHandle?.set(
+                                                        "productformakereview",
+                                                        product.product.idProduct
+                                                    )
+                                                    navHostController.navigate(Screens.MakeReviewPage.route)
+                                                }
 
+                                                1 -> {
+                                                    snackbarHostState.currentSnackbarData?.dismiss()
+                                                    snackbarHostState.showSnackbar(
+                                                        message = "Вы уже оставляли отзыв на этот товар"
+                                                    )
+                                                }
 
-                                }
-                            }, shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MainColor.AppColor.value)
+                                                else -> {
+                                                    snackbarHostState.currentSnackbarData?.dismiss()
+                                                    snackbarHostState.showSnackbar(
+                                                        message = "Ошибка, повторите позже"
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }, shape = RoundedCornerShape(8.dp),
+                                    colors =
+                                    ButtonDefaults.buttonColors(containerColor = MainColor.AppColor.value)
                                 ) {
                                     Text("Оставить отзыв")
+                                }
                             }
                         }
                     )
