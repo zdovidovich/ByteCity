@@ -36,18 +36,16 @@ class MainActivity : ComponentActivity() {
                 val currentBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = currentBackStackEntry?.destination?.route
 
-
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
-                    if(currentRoute == null || currentRoute in ScreenWithModalNavigationDrawer.AllScreens.list) {
-                        MainNavDrawer(drawerState, navController){ navController, drawerState ->
+                    if (currentRoute == null || currentRoute in ScreenWithModalNavigationDrawer.AllScreens.list) {
+                        MainNavDrawer(drawerState, navController) { navController, drawerState ->
                             Navigation(navController = navController, drawerState = drawerState)
                         }
-                    } else{
+                    } else {
                         Navigation(navController = navController, drawerState = drawerState)
                     }
 
@@ -60,7 +58,6 @@ class MainActivity : ComponentActivity() {
         DbConn.connection.close()
         super.onDestroy()
     }
-
 }
 
 
