@@ -89,7 +89,7 @@ CREATE TABLE `Cooling` (
   `maxSpeed` smallint DEFAULT NULL COMMENT 'Максимальная скорость',
   `color` varchar(10) DEFAULT NULL COMMENT 'Цвет',
   PRIMARY KEY (`idCooling`),
-  CONSTRAINT `idProductCooling` FOREIGN KEY (`idCooling`) REFERENCES `Product` (`idProduct`) ON DELETE CASCADE
+  CONSTRAINT `idProductCooling` FOREIGN KEY (`idCooling`) REFERENCES `Product` (`idProduct`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -195,7 +195,7 @@ CREATE TABLE `Hdd` (
   `seqReadSpeed` mediumint DEFAULT NULL COMMENT 'Скорость последовательного чтения',
   `seqWriteSpeed` mediumint DEFAULT NULL COMMENT 'Скорость последовательной записи',
   PRIMARY KEY (`idHdd`),
-  CONSTRAINT `idProductHdd` FOREIGN KEY (`idHdd`) REFERENCES `Product` (`idProduct`) ON DELETE CASCADE
+  CONSTRAINT `idProductHdd` FOREIGN KEY (`idHdd`) REFERENCES `Product` (`idProduct`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -227,7 +227,7 @@ CREATE TABLE `Motherboard` (
   `qtyRam` tinyint DEFAULT NULL COMMENT 'Количество слотов памяти',
   `color` varchar(10) DEFAULT NULL COMMENT 'Цвет',
   PRIMARY KEY (`idMotherboard`),
-  CONSTRAINT `idProductMotherboard` FOREIGN KEY (`idMotherboard`) REFERENCES `Product` (`idProduct`) ON DELETE CASCADE
+  CONSTRAINT `idProductMotherboard` FOREIGN KEY (`idMotherboard`) REFERENCES `Product` (`idProduct`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -280,8 +280,8 @@ CREATE TABLE `OrderProduct` (
   `price` double NOT NULL,
   PRIMARY KEY (`idOrder`,`idProduct`),
   KEY `idProduct_idx` (`idProduct`),
-  CONSTRAINT `idOrderconnectProduct` FOREIGN KEY (`idOrder`) REFERENCES `OrderDetails` (`idOrder`) ON DELETE CASCADE,
-  CONSTRAINT `idProductconnectOrder` FOREIGN KEY (`idProduct`) REFERENCES `Product` (`idProduct`) ON DELETE CASCADE
+  CONSTRAINT `idOrderconnectProduct` FOREIGN KEY (`idOrder`) REFERENCES `OrderDetails` (`idOrder`) ON DELETE RESTRICT,
+  CONSTRAINT `idProductconnectOrder` FOREIGN KEY (`idProduct`) REFERENCES `Product` (`idProduct`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -323,16 +323,16 @@ CREATE TABLE `PC` (
   KEY `idCoolingPC_idx` (`idCooling`),
   KEY `idCasePC_idx` (`idCase`),
   KEY `idPowerUnitPC_idx` (`idPowerUnit`),
-  CONSTRAINT `idCasePC` FOREIGN KEY (`idCase`) REFERENCES `PCCase` (`idPCCase`) ON DELETE CASCADE,
-  CONSTRAINT `idCoolingPC` FOREIGN KEY (`idCooling`) REFERENCES `Cooling` (`idCooling`) ON DELETE CASCADE,
-  CONSTRAINT `idHdd` FOREIGN KEY (`idHdd`) REFERENCES `Hdd` (`idHdd`) ON DELETE CASCADE,
-  CONSTRAINT `idMotherboardPC` FOREIGN KEY (`idMotherboard`) REFERENCES `Motherboard` (`idMotherboard`) ON DELETE CASCADE,
-  CONSTRAINT `idPowerUnitPC` FOREIGN KEY (`idPowerUnit`) REFERENCES `PowerUnit` (`idPowerUnit`) ON DELETE CASCADE,
-  CONSTRAINT `idProcessorPC` FOREIGN KEY (`idProcessor`) REFERENCES `Processor` (`idProcessor`) ON DELETE CASCADE,
-  CONSTRAINT `idProductPC` FOREIGN KEY (`idPC`) REFERENCES `Product` (`idProduct`) ON DELETE CASCADE,
-  CONSTRAINT `idRamPC` FOREIGN KEY (`idRam`) REFERENCES `Ram` (`idRam`) ON DELETE CASCADE,
-  CONSTRAINT `idSsdPC` FOREIGN KEY (`idSsd`) REFERENCES `Ssd` (`idSsd`) ON DELETE CASCADE,
-  CONSTRAINT `idVideocardPC` FOREIGN KEY (`idVideocard`) REFERENCES `Videocard` (`idVideocard`) ON DELETE CASCADE
+  CONSTRAINT `idCasePC` FOREIGN KEY (`idCase`) REFERENCES `PCCase` (`idPCCase`) ON DELETE RESTRICT,
+  CONSTRAINT `idCoolingPC` FOREIGN KEY (`idCooling`) REFERENCES `Cooling` (`idCooling`) ON DELETE RESTRICT,
+  CONSTRAINT `idHdd` FOREIGN KEY (`idHdd`) REFERENCES `Hdd` (`idHdd`) ON DELETE RESTRICT,
+  CONSTRAINT `idMotherboardPC` FOREIGN KEY (`idMotherboard`) REFERENCES `Motherboard` (`idMotherboard`) ON DELETE RESTRICT,
+  CONSTRAINT `idPowerUnitPC` FOREIGN KEY (`idPowerUnit`) REFERENCES `PowerUnit` (`idPowerUnit`) ON DELETE RESTRICT,
+  CONSTRAINT `idProcessorPC` FOREIGN KEY (`idProcessor`) REFERENCES `Processor` (`idProcessor`) ON DELETE RESTRICT,
+  CONSTRAINT `idProductPC` FOREIGN KEY (`idPC`) REFERENCES `Product` (`idProduct`) ON DELETE RESTRICT,
+  CONSTRAINT `idRamPC` FOREIGN KEY (`idRam`) REFERENCES `Ram` (`idRam`) ON DELETE RESTRICT,
+  CONSTRAINT `idSsdPC` FOREIGN KEY (`idSsd`) REFERENCES `Ssd` (`idSsd`) ON DELETE RESTRICT,
+  CONSTRAINT `idVideocardPC` FOREIGN KEY (`idVideocard`) REFERENCES `Videocard` (`idVideocard`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -364,7 +364,7 @@ CREATE TABLE `PCCase` (
   `powerUnitLocation` varchar(14) DEFAULT NULL COMMENT 'Расположение блока питания',
   `color` varchar(10) DEFAULT NULL COMMENT 'Цвет',
   PRIMARY KEY (`idPCCase`),
-  CONSTRAINT `idProductCase` FOREIGN KEY (`idPCCase`) REFERENCES `Product` (`idProduct`) ON DELETE CASCADE
+  CONSTRAINT `idProductCase` FOREIGN KEY (`idPCCase`) REFERENCES `Product` (`idProduct`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -407,7 +407,7 @@ CREATE TABLE `Phone` (
   `protection` char(4) DEFAULT NULL COMMENT 'Защита',
   `batteryCapacity` mediumint DEFAULT NULL COMMENT 'Емкость аккумулятора',
   PRIMARY KEY (`idPhone`),
-  CONSTRAINT `idPhoneProduct` FOREIGN KEY (`idPhone`) REFERENCES `Product` (`idProduct`) ON DELETE CASCADE
+  CONSTRAINT `idPhoneProduct` FOREIGN KEY (`idPhone`) REFERENCES `Product` (`idProduct`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -440,7 +440,7 @@ CREATE TABLE `PowerUnit` (
   `SATA` tinyint DEFAULT NULL COMMENT 'SATA',
   `color` varchar(10) DEFAULT NULL COMMENT 'Цвет',
   PRIMARY KEY (`idPowerUnit`),
-  CONSTRAINT `idProductPowerUnit` FOREIGN KEY (`idPowerUnit`) REFERENCES `Product` (`idProduct`) ON DELETE CASCADE
+  CONSTRAINT `idProductPowerUnit` FOREIGN KEY (`idPowerUnit`) REFERENCES `Product` (`idProduct`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -473,7 +473,7 @@ CREATE TABLE `Processor` (
   `typeDelivery` char(3) DEFAULT NULL COMMENT 'Тип подставки',
   `graphics` varchar(22) DEFAULT NULL COMMENT 'Встроенная графика',
   PRIMARY KEY (`idProcessor`),
-  CONSTRAINT `idProductProcessor` FOREIGN KEY (`idProcessor`) REFERENCES `Product` (`idProduct`) ON DELETE CASCADE
+  CONSTRAINT `idProductProcessor` FOREIGN KEY (`idProcessor`) REFERENCES `Product` (`idProduct`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -535,7 +535,7 @@ CREATE TABLE `Ram` (
   `qty` tinyint DEFAULT NULL COMMENT 'Количество модулей',
   `color` varchar(10) DEFAULT NULL COMMENT 'Цвет',
   PRIMARY KEY (`idRam`),
-  CONSTRAINT `idProductRam` FOREIGN KEY (`idRam`) REFERENCES `Product` (`idProduct`) ON DELETE CASCADE
+  CONSTRAINT `idProductRam` FOREIGN KEY (`idRam`) REFERENCES `Product` (`idProduct`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -564,8 +564,8 @@ CREATE TABLE `Review` (
   PRIMARY KEY (`idProduct`,`idUser`),
   KEY `idProduct_idx` (`idProduct`),
   KEY `idUser_idx` (`idUser`),
-  CONSTRAINT `idProductReview` FOREIGN KEY (`idProduct`) REFERENCES `Product` (`idProduct`),
-  CONSTRAINT `idUserReview` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`)
+  CONSTRAINT `idProductReview` FOREIGN KEY (`idProduct`) REFERENCES `Product` (`idProduct`) ON DELETE CASCADE,
+  CONSTRAINT `idUserReview` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -598,7 +598,7 @@ CREATE TABLE `Ssd` (
   `averageRandomReadSpeed` mediumint DEFAULT NULL COMMENT 'Средння скорость случайного чтения',
   `averageRandomWriteSpeed` mediumint DEFAULT NULL COMMENT 'Средння скорость случайной записи',
   PRIMARY KEY (`idSsd`),
-  CONSTRAINT `idProductSsd` FOREIGN KEY (`idSsd`) REFERENCES `Product` (`idProduct`) ON DELETE CASCADE
+  CONSTRAINT `idProductSsd` FOREIGN KEY (`idSsd`) REFERENCES `Product` (`idProduct`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -651,7 +651,7 @@ CREATE TABLE `UserOrder` (
   `idUser` int NOT NULL,
   PRIMARY KEY (`idOrder`,`idUser`),
   KEY `idUser_idx` (`idUser`),
-  CONSTRAINT `idOrderConnectUser` FOREIGN KEY (`idOrder`) REFERENCES `OrderDetails` (`idOrder`) ON DELETE CASCADE,
+  CONSTRAINT `idOrderConnectUser` FOREIGN KEY (`idOrder`) REFERENCES `OrderDetails` (`idOrder`) ON DELETE RESTRICT,
   CONSTRAINT `idUserConnectOrder` FOREIGN KEY (`idUser`) REFERENCES `User` (`idUser`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -690,7 +690,7 @@ CREATE TABLE `Videocard` (
   `width` float DEFAULT NULL COMMENT 'Ширина',
   `color` varchar(10) DEFAULT NULL COMMENT 'Цвет',
   PRIMARY KEY (`idVideocard`),
-  CONSTRAINT `idProductVideocard` FOREIGN KEY (`idVideocard`) REFERENCES `Product` (`idProduct`) ON DELETE CASCADE ON UPDATE RESTRICT
+  CONSTRAINT `idProductVideocard` FOREIGN KEY (`idVideocard`) REFERENCES `Product` (`idProduct`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
