@@ -27,16 +27,7 @@ class SearchProductsPagingSource(val text: String, val context: Context) :
 
             val allProducts = mutableListOf<Product>()
             while (resultSetListProduct.next()) {
-
-                val idDiscount = resultSetListProduct.getInt("idDiscount")
-                var discountValue = 0.0
-                if (!resultSetListProduct.wasNull()) {
-                    val resultSetDiscount = DbHelper.getInfoDiscount(idDiscount)
-                    resultSetDiscount.next()
-                    discountValue = resultSetDiscount.getDouble("value")
-                    resultSetDiscount.close()
-                }
-                val product = Product.parse(resultSetListProduct, discountValue)
+                val product = Product.parse(resultSetListProduct)
                 allProducts.add(product)
             }
             resultSetListProduct.close()

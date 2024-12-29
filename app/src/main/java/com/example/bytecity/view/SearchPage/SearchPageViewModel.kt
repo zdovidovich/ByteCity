@@ -32,4 +32,9 @@ class SearchPageViewModel : ViewModel() {
         }
     }
 
+    fun cleanPager() {
+        _pager.value = PagingData.empty()
+    }
+
+
 }

@@ -150,7 +150,8 @@ class DbHelper {
 
         suspend fun getAllProductWishList(connection: DbConnection = DbConn): ResultSet =
             withContext(Dispatchers.IO) {
-                val query = "SELECT idProduct FROM Favourite WHERE idUser = ?"
+                val query =
+                    "SELECT * FROM Favourite JOIN Product ON Favourite.idProduct = Product.idProduct LEFT JOIN Discount ON Product.idDiscount = Discount.idDiscount  WHERE idUser = ?"
                 val statement = connection.connection.prepareStatement(query).apply {
                     setInt(1, User.Id.id)
                 }
@@ -159,7 +160,8 @@ class DbHelper {
 
         suspend fun getAllProductCart(connection: DbConnection = DbConn): ResultSet =
             withContext(Dispatchers.IO) {
-                val query = "SELECT * FROM Cart WHERE idUser = ?"
+                val query =
+                    "SELECT * FROM Cart JOIN Product ON Product.idProduct = Cart.idProduct LEFT JOIN Discount ON Product.idDiscount = Discount.idDiscount WHERE idUser = ?"
                 val statement = connection.connection.prepareStatement(query).apply {
                     setInt(1, User.Id.id)
                 }
@@ -218,7 +220,7 @@ class DbHelper {
         ): ResultSet = withContext(Dispatchers.IO) {
             val inQ = if (category.isEmpty()) "" else " type = ? AND"
             val query =
-                "SELECT * FROM Product WHERE$inQ inStock > 0 LIMIT $limit OFFSET $offset"
+                "SELECT * FROM Product LEFT JOIN Discount ON Product.idDiscount = Discount.idDiscount WHERE$inQ inStock > 0 LIMIT $limit OFFSET $offset"
             val statement = connection.connection.prepareStatement(query).apply {
                 if (category.isNotEmpty()) {
                     setString(1, category)
@@ -300,14 +302,6 @@ class DbHelper {
             return getProductInSomething(product, "Cart", connection)
         }
 
-        suspend fun getProductById(id: Int, connection: DbConnection = DbConn): ResultSet =
-            withContext(Dispatchers.IO) {
-                val query = "SELECT * FROM Product WHERE idProduct = ?"
-                val statement = connection.connection.prepareStatement(query).apply {
-                    setInt(1, id)
-                }
-                return@withContext statement.executeQuery()
-            }
 
 
         suspend fun getProductById(
@@ -316,7 +310,8 @@ class DbHelper {
             offset: Int,
             connection: DbConnection = DbConn
         ): ResultSet = withContext(Dispatchers.IO) {
-            val query = "SELECT * FROM Product WHERE idProduct = ? LIMIT $limit OFFSET $offset"
+            val query =
+                "SELECT * FROM Product LEFT JOIN Discount ON Product.idDiscount = Discount.idDiscount WHERE idProduct = ? LIMIT $limit OFFSET $offset"
             val statement = connection.connection.prepareStatement(query).apply {
                 setInt(1, id)
             }
@@ -492,37 +487,12 @@ class DbHelper {
             offset: Int
         ): ResultSet = withContext(Dispatchers.IO) {
             val query =
-                "SELECT * FROM Product WHERE CONCAT_WS(' ', brand, model) LIKE ? LIMIT $limit OFFSET $offset"
+                "SELECT * FROM Product LEFT JOIN Discount ON Product.idDiscount = Discount.idDiscount WHERE CONCAT_WS(' ', brand, model) LIKE ? LIMIT $limit OFFSET $offset"
             val statement = connection.connection.prepareStatement(query).apply {
                 setString(1, "%$text%")
             }
             return@withContext statement.executeQuery()
         }
-
-
-        suspend fun getInfoDiscount(idDiscount: Int, connection: DbConnection = DbConn): ResultSet =
-            withContext(Dispatchers.IO) {
-                val query = "SELECT * FROM Discount WHERE idDiscount = ?"
-                val statement = connection.connection.prepareStatement(query).apply {
-                    setInt(1, idDiscount)
-                }
-                return@withContext statement.executeQuery()
-            }
-
-
-        suspend fun getInfoDiscount(
-            idDiscount: Int,
-            limit: Int,
-            offset: Int,
-            connection: DbConnection = DbConn
-        ): ResultSet = withContext(Dispatchers.IO) {
-            val query = "SELECT * FROM Discount WHERE idDiscount = ? LIMIT $limit OFFSET $offset"
-            val statement = connection.connection.prepareStatement(query).apply {
-                setInt(1, idDiscount)
-            }
-            return@withContext statement.executeQuery()
-        }
-
 
         suspend fun getReviews(idProduct: Int, connection: DbConnection = DbConn): ResultSet =
             withContext(Dispatchers.IO) {

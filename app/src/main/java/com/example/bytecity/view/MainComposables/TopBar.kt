@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.bytecity.model.MainColor
+import kotlinx.coroutines.flow.MutableStateFlow
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,6 +96,7 @@ fun TopBar(navIcon: @Composable () -> Unit, actionIcon: @Composable () -> Unit) 
 @Composable
 fun SearchingTopBar(
     text: MutableState<String>,
+    textForQuery: MutableStateFlow<String>,
     iconButton: @Composable () -> Unit
 ) {
     TopAppBar(
@@ -115,6 +117,7 @@ fun SearchingTopBar(
                     .padding(vertical = 8.dp, horizontal = 4.dp),
                     value = text.value, onValueChange = {
                         text.value = it
+                        textForQuery.value = it
                     }, singleLine = true, placeholder = {
                         Text(text = "Поиск")
                     },

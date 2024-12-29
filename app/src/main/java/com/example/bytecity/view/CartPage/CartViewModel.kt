@@ -18,22 +18,11 @@ class CartViewModel : ViewModel() {
     suspend fun getProductsFromCart() {
         try {
             val resultSetProductIds = DbHelper.getAllProductCart()
-            if (!resultSetProductIds.isBeforeFirst) {
-                resultSetProductIds.close()
-                withContext(Dispatchers.Main) {
-                    _cartState.value = _cartState.value.copy(
-                        loading = false
-                    )
-                }
-                return
-            }
             val productsInWishList = mutableListOf<ProductForCart>()
             while (resultSetProductIds.next()) {
                 val id = resultSetProductIds.getInt("idProduct")
-                val resultSetProduct = DbHelper.getProductById(id)
-                resultSetProduct.next()
                 var qty = resultSetProductIds.getInt("quantity")
-                val inStock = resultSetProduct.getInt("inStock")
+                val inStock = resultSetProductIds.getInt("inStock")
                 if (qty > inStock) {
                     qty = 1
                     DbHelper.updateQtyCartToOne(idProduct = id)
@@ -42,19 +31,10 @@ class CartViewModel : ViewModel() {
                     DbHelper.deleteProductCart(id)
                     continue
                 }
-                val idDiscount = resultSetProduct.getInt("idDiscount")
-                var discountValue = 0.0
-                if (!resultSetProduct.wasNull()) {
-                    val resultSetDiscount = DbHelper.getInfoDiscount(idDiscount)
-                    resultSetDiscount.next()
-                    discountValue = resultSetDiscount.getDouble("value")
-                    resultSetDiscount.close()
-                }
-                val product = Product.parse(resultSetProduct, discountValue)
+                val product = Product.parse(resultSetProductIds)
                 val productForCart =
                     ProductForCart(product, qty)
                 productsInWishList.add(productForCart)
-                resultSetProduct.close()
             }
             resultSetProductIds.close()
             withContext(Dispatchers.Main) {

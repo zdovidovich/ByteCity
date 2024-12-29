@@ -8,7 +8,6 @@ import com.example.bytecity.model.DbConnection
 import com.example.bytecity.model.DbHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.sql.ResultSet
 
 class ProductPagingSource(val type: String, private val context: Context) :
     PagingSource<Int, Product>() {
@@ -21,23 +20,12 @@ class ProductPagingSource(val type: String, private val context: Context) :
             withContext(Dispatchers.IO) {
                 connection.connect(context)
             }
-            val resultSetListProduct: ResultSet
-            withContext(Dispatchers.IO) {
-                resultSetListProduct =
+            val resultSetListProduct =
                 DbHelper.getProducts(connection = connection, type, pageSize, page * pageSize)
-            }
+
             val allProducts = mutableListOf<Product>()
             while (resultSetListProduct.next()) {
-
-                val idDiscount = resultSetListProduct.getInt("idDiscount")
-                var discountValue = 0.0
-                if (!resultSetListProduct.wasNull()) {
-                    val resultSetDiscount = DbHelper.getInfoDiscount(idDiscount)
-                    resultSetDiscount.next()
-                    discountValue = resultSetDiscount.getDouble("value")
-                    resultSetDiscount.close()
-                }
-                allProducts.add(Product.parse(resultSetListProduct, discountValue))
+                allProducts.add(Product.parse(resultSetListProduct))
             }
             resultSetListProduct.close()
             connection.connection.close()

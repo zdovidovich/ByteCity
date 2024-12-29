@@ -40,6 +40,8 @@ import com.example.bytecity.model.MainColor
 import com.example.bytecity.view.ListProductsPage.ProductItemPreScreen
 import com.example.bytecity.view.MainComposables.MainSnackbar
 import com.example.bytecity.view.MainComposables.SearchingTopBar
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
 @Composable
@@ -47,15 +49,18 @@ fun SearchPage(navHostController: NavHostController) {
     val text = remember {
         mutableStateOf("")
     }
+    val textForQuery = remember { MutableStateFlow("") }
+    var searching by remember { mutableStateOf(false) }
+
+
     val snackbarHostState = remember { SnackbarHostState() }
 
     val listState = rememberLazyGridState()
     val scope = rememberCoroutineScope()
 
-
-    val viewModel: SearchPageViewModel = viewModel()
+    val searchPageViewModel: SearchPageViewModel = viewModel()
     val context = LocalContext.current
-    val products = viewModel.pager.collectAsLazyPagingItems()
+    val products = searchPageViewModel.pager.collectAsLazyPagingItems()
 
     var startSearch by remember {
         mutableStateOf(false)
@@ -65,7 +70,7 @@ fun SearchPage(navHostController: NavHostController) {
             .fillMaxSize()
             .padding(8.dp),
         topBar = {
-            SearchingTopBar(text = text) {
+            SearchingTopBar(text = text, textForQuery = textForQuery) {
                 IconButton(onClick = { navHostController.navigateUp() }) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
                 }
@@ -90,9 +95,14 @@ fun SearchPage(navHostController: NavHostController) {
         }
 
     ) {
-        LaunchedEffect(text.value) {
+        LaunchedEffect(textForQuery.value) {
+            searchPageViewModel.cleanPager()
             if (startSearch) {
-                viewModel.getProducts(text.value, context)
+                searching = true
+                textForQuery.debounce(400L).collect { query ->
+                    searching = false
+                    searchPageViewModel.getProducts(query, context)
+                }
             }
             startSearch = true
         }
@@ -122,6 +132,8 @@ fun SearchPage(navHostController: NavHostController) {
                         ), fontSize = 16.sp, fontWeight = FontWeight.Medium
                     )
                 }
+
+                searching -> {}
 
                 products.itemCount == 0 -> {
                     Text(

@@ -39,16 +39,7 @@ class AllOrderPagingSource(private val context: Context): PagingSource<Int, Orde
                     while(resultSetOrderProducts[i]?.next()!!){
                         val resultSetProduct = DbHelper.getProductById(resultSetOrderProducts[i]?.getInt("idProduct")!!, pageSize, page * pageSize, connection)
                         resultSetProduct.next()
-
-                        val idDiscount = resultSetProduct.getInt("idDiscount")
-                        var discountValue = 0.0
-                        if(!resultSetProduct.wasNull()){
-                            val resultSetDiscount = DbHelper.getInfoDiscount(idDiscount, pageSize, page * pageSize, connection)
-                            resultSetDiscount.next()
-                            discountValue = resultSetDiscount.getDouble("value")
-                            resultSetDiscount.close()
-                        }
-                        val product = Product.parse(resultSetProduct, discountValue = discountValue)
+                        val product = Product.parse(resultSetProduct)
 
                         val qty = resultSetOrderProducts[i]?.getInt("quantity")!!
                         productsTemp.add(ProductForCart(product, qty))

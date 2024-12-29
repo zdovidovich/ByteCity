@@ -21,7 +21,9 @@ data class Product(
 
         companion object{
 
-            fun parse(resultSetProduct: ResultSet, discountValue:Double) : Product{
+            fun parse(resultSetProduct: ResultSet): Product {
+                var discountValue = resultSetProduct.getDouble("value")
+                if (resultSetProduct.wasNull()) discountValue = 0.0
                 val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
                 val rdate = formatter.parse(resultSetProduct.getDate("releaseDate").toString())
                 return Product(
@@ -29,7 +31,10 @@ data class Product(
                     brand = resultSetProduct.getString("brand"),
                     model = resultSetProduct.getString("model"),
                     type = resultSetProduct.getString("type"),
-                    price = String.format("%.2f", resultSetProduct.getDouble("price") * (1 - discountValue)).replace(",", ".").toDouble(),
+                    price = String.format(
+                        "%.2f",
+                        resultSetProduct.getDouble("price") * (1 - discountValue)
+                    ).replace(",", ".").toDouble(),
                     imageProduct = resultSetProduct.getString("imageProduct"),
                     inStock = resultSetProduct.getInt("inStock"),
                     releaseDate = rdate!!
