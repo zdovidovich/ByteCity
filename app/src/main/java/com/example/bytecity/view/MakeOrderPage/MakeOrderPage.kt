@@ -192,26 +192,3 @@ fun makeOrderPage(
 
 }
 
-
-//@Preview(showBackground = true)
-//@Composable
-//fun makeOrderPagePreview() {
-//    val navHostController = rememberNavController()
-//    val str = "https://img.sila.by/catalog/img13/tovar138536.jpg"
-//
-//    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-//    val rdate = formatter.parse("2021-03-30")
-//    val product: Product = Product(
-//        99,
-//        "Asus",
-//        "ROG Strix Z590-E",
-//        "PC",
-//        539.99,
-//        str,
-//        10,
-//        rdate!!
-//    )
-//    val readProduct = ProductForCart(product, 100)
-//    val l: List<ProductForCart> = listOf(readProduct)
-//    makeOrderPage(navHostController, l)
-//}

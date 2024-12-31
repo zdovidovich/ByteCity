@@ -60,9 +60,3 @@ fun CategoryItem(category: Pair<String, String>, navController: NavHostControlle
         Icon(Icons.Filled.PlayArrow, "Дальше")
     }
 }
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun CategoryItemPreview() {
-//    CategoryItem(category = "Телефоны")
-//}

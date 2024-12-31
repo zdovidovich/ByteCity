@@ -13,9 +13,7 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/roundlogo"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ByteCity"
-
-        >
+        android:theme="@style/Theme.ByteCity">
 
 
         <activity
