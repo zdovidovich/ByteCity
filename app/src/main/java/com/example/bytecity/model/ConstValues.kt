@@ -18,7 +18,7 @@ sealed class Category(val categories: Map<String, String>) {
     data object MainList : Category(
         mapOf(
             "Телефоны" to "Phone",
-            "Комппьюетры" to "PC",
+            "Компьюетры" to "PC",
             "Комплектующие" to "Components",
             "Все товары" to ""
         )

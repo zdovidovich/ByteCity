@@ -59,7 +59,7 @@ fun CartPreScreen(
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
             }
 
-            viewState.error != null -> {
+            !viewState.error.isNullOrEmpty() -> {
                 Text(viewState.error!!)
             }
 

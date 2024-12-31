@@ -1,4 +1,4 @@
-package com.example.bytecity.view.CategoryPage
+package com.example.bytecity.view.AllOrderPage.CategoryPage
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

@@ -2,8 +2,6 @@ package com.example.bytecity.view.MakeReviewPage
 
 import androidx.lifecycle.ViewModel
 import com.example.bytecity.model.DbHelper
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class MakeReviewViewModel : ViewModel() {
 
@@ -12,7 +10,7 @@ class MakeReviewViewModel : ViewModel() {
         rating: Float, text: String
     ): Int {
         return try {
-            DbHelper.uploadReview(idProduct, rating, text)
+            DbHelper.uploadReview(idProduct, rating, text.trim())
             200
         } catch (ex: Exception) {
             1

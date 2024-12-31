@@ -1,4 +1,4 @@
-package com.example.bytecity.view.CategoryPage
+package com.example.bytecity.view.AllOrderPage.CategoryPage
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize

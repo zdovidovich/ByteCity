@@ -38,7 +38,6 @@ class SearchProductsPagingSource(val text: String, val context: Context) :
             )
         } catch (ex: Exception) {
             LoadResult.Error(ex)
-
         } finally {
             connection?.connection?.close()
         }

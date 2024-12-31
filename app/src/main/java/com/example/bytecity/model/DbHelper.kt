@@ -116,6 +116,7 @@ class DbHelper {
                 return@withContext statement.executeQuery()
             }
 
+
         suspend fun addProductToWishList(product: Product, connection: DbConnection = DbConn): Int =
             withContext(Dispatchers.IO) {
                 val query = "INSERT INTO Favourite VALUES (?, ?)"
@@ -267,7 +268,7 @@ class DbHelper {
         suspend fun getName(id: Int, connection: DbConnection = DbConn): ResultSet =
             withContext(Dispatchers.IO) {
                 val query =
-                    "SELECT CONCAT_WS(' ', brand, model) as res FROM Product WHERE idProduct = ?"
+                    "SELECT CONCAT_WS(' ', brand, model) AS res FROM Product WHERE idProduct = ?"
                 val statement = connection.connection.prepareStatement(query).apply {
                     setInt(1, id)
                 }
@@ -303,15 +304,12 @@ class DbHelper {
         }
 
 
-
         suspend fun getProductById(
             id: Int,
-            limit: Int,
-            offset: Int,
             connection: DbConnection = DbConn
         ): ResultSet = withContext(Dispatchers.IO) {
             val query =
-                "SELECT * FROM Product LEFT JOIN Discount ON Product.idDiscount = Discount.idDiscount WHERE idProduct = ? LIMIT $limit OFFSET $offset"
+                "SELECT * FROM Product LEFT JOIN Discount ON Product.idDiscount = Discount.idDiscount WHERE idProduct = ?"
             val statement = connection.connection.prepareStatement(query).apply {
                 setInt(1, id)
             }
@@ -437,46 +435,23 @@ class DbHelper {
             connection: DbConnection = DbConn
         ): ResultSet = withContext(Dispatchers.IO) {
             val queryFirst =
-                "SELECT idOrder FROM UserOrder where idUser = ? LIMIT $limit OFFSET $offset"
+                "SELECT * FROM UserOrder JOIN OrderDetails ON UserOrder.idOrder = OrderDetails.idOrder WHERE idUser = ? LIMIT $limit OFFSET $offset"
             val statementFirst = connection.connection.prepareStatement(queryFirst).apply {
                 setInt(1, User.Id.id)
             }
             return@withContext statementFirst.executeQuery()
         }
 
-
-        suspend fun getOrderDetails(
-            idOrders: ResultSet,
-            limit: Int, offset: Int,
-            connection: DbConnection = DbConn
-        ): List<ResultSet> = withContext(Dispatchers.IO) {
-            val res: MutableList<ResultSet> = mutableListOf()
-            while (idOrders.next()) {
-                val query =
-                    "SELECT * FROM OrderDetails WHERE idOrder = ? LIMIT $limit OFFSET $offset"
-                val statement = connection.connection.prepareStatement(query).apply {
-                    setInt(1, idOrders.getInt("idOrder"))
-                }
-                res.add(statement.executeQuery())
-            }
-            return@withContext res
-        }
-
         suspend fun getOrderProducts(
-            idOrders: ResultSet,
-            limit: Int, offset: Int,
+            idOrders: Int,
             connection: DbConnection = DbConn
-        ): List<ResultSet> = withContext(Dispatchers.IO) {
-            val res = mutableListOf<ResultSet>()
-            while (idOrders.next()) {
-                val query =
-                    "SELECT * FROM OrderProduct WHERE idOrder = ? LIMIT $limit OFFSET $offset"
-                val statement = connection.connection.prepareStatement(query).apply {
-                    setInt(1, idOrders.getInt("idOrder"))
-                }
-                res.add(statement.executeQuery())
+        ): ResultSet = withContext(Dispatchers.IO) {
+            val query =
+                "SELECT * FROM OrderProduct WHERE idOrder = ?"
+            val statement = connection.connection.prepareStatement(query).apply {
+                setInt(1, idOrders)
             }
-            return@withContext res
+            return@withContext statement.executeQuery()
         }
 
 
@@ -511,7 +486,8 @@ class DbHelper {
             text: String,
             connection: DbConnection = DbConn
         ): Int = withContext(Dispatchers.IO) {
-            val query = "INSERT INTO Review (idProduct, idUser, rating, review) VALUES (?, ?, ?, ?)"
+            val query =
+                "INSERT INTO Review (idProduct, idUser, rating, review) VALUES (?, ?, ?, ?)"
             val statement = connection.connection.prepareStatement(query).apply {
                 setInt(1, idProduct)
                 setInt(2, User.Id.id)
@@ -540,7 +516,10 @@ class DbHelper {
                 statement.executeUpdate()
             }
 
-        suspend fun checkUserReview(idProduct: Int, connection: DbConnection = DbConn): ResultSet =
+        suspend fun checkUserReview(
+            idProduct: Int,
+            connection: DbConnection = DbConn
+        ): ResultSet =
             withContext(Dispatchers.IO) {
                 val query = "SELECT idUser FROM Review WHERE idProduct = ? AND idUser = ?"
                 val statement = connection.connection.prepareStatement(query).apply {

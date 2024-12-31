@@ -33,263 +33,6 @@ import com.example.bytecity.model.Screens
 import com.example.bytecity.model.User
 import kotlinx.coroutines.launch
 
-//@Composable
-//fun MainNavDrawer(content: @Composable (CoroutineScope, DrawerState) -> Unit) {
-//
-//
-//    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-//    val scope = rememberCoroutineScope()
-//
-//
-//    val ItemColors = NavigationDrawerItemDefaults.colors(
-//        unselectedContainerColor = Color.White,
-//        unselectedTextColor = Color.Black,
-//        unselectedIconColor = Color.Black,
-//        selectedBadgeColor = Color.LightGray,
-//        selectedContainerColor = Color.LightGray,
-//        selectedIconColor = Color.Black,
-//        selectedTextColor = Color.Black
-//    )
-//
-//    ModalNavigationDrawer(
-//        drawerState = drawerState, content = { content(scope, drawerState) },
-//        drawerContent = {
-//            ModalDrawerSheet(
-//                drawerContainerColor = Color.White,
-//                drawerContentColor = Color.White,
-//            ) {
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth(),
-//                ) {
-//
-//
-//                    NavigationDrawerItem(
-//                        shape = RectangleShape,
-//                        label = {
-//                            Row(horizontalArrangement = Arrangement.SpaceBetween) {
-//                                Text(
-//                                    "Мой аккаунт"
-//                                )
-//                            }
-//
-//                        },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = {
-//                            Icon(
-//                                Icons.Filled.AccountCircle,
-//                                "Мой Аккаунт",
-//                                modifier = Modifier.padding(start = 8.dp)
-//                            )
-//                        },
-//                        colors = NavigationDrawerItemDefaults.colors(
-//                            unselectedContainerColor = MainColor.AppColor.value,
-//                            unselectedTextColor = Color.White,
-//                            unselectedIconColor = Color.White,
-//                        )
-//                    )
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("Главная", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = { Icon(Icons.Filled.Home, "Главная") },
-//                        colors = ItemColors
-//                    )
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("Каталог", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = { Icon(Icons.Filled.Info, "Каталог") },
-//                        colors = ItemColors
-//                    )
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("Избранное", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = { Icon(Icons.Default.Star, "Избранное") },
-//                        colors = ItemColors
-//                    )
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("Моя корзина", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = { Icon(Icons.Filled.ShoppingCart, "Моя корзина") },
-//                        colors = ItemColors
-//                    )
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("Мои заказы", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = { Icon(Icons.Filled.Done, "Мои заказы") },
-//                        colors = ItemColors
-//                    )
-//                }
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .padding(8.dp), verticalArrangement = Arrangement.Bottom
-//                ) {
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("О нас", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = { Icon(Icons.Filled.Info, "О нас") },
-//                        colors = ItemColors
-//                    )
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("Настройки", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = { Icon(Icons.Filled.Settings, "Настройки") },
-//                        colors = ItemColors
-//                    )
-//                }
-//            }
-//
-//        },
-//        scrimColor = Color.LightGray
-//    )
-//}
-//
-//
-//@Composable
-//fun MainNavDrawer(
-//    type: String,
-//    content: @Composable (String, CoroutineScope, DrawerState) -> Unit
-//) {
-//
-//
-//    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-//    val scope = rememberCoroutineScope()
-//
-//
-//    val ItemColors = NavigationDrawerItemDefaults.colors(
-//        unselectedContainerColor = Color.White,
-//        unselectedTextColor = Color.Black,
-//        unselectedIconColor = Color.Black,
-//        selectedBadgeColor = Color.LightGray,
-//        selectedContainerColor = Color.LightGray,
-//        selectedIconColor = Color.Black,
-//        selectedTextColor = Color.Black
-//    )
-//
-//    ModalNavigationDrawer(
-//        drawerState = drawerState, content = { content(type, scope, drawerState) },
-//        drawerContent = {
-//            ModalDrawerSheet(
-//                drawerContainerColor = Color.White,
-//                drawerContentColor = Color.White,
-//            ) {
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth(),
-//                ) {
-//
-//
-//                    NavigationDrawerItem(
-//                        shape = RectangleShape,
-//                        label = {
-//                            Row(horizontalArrangement = Arrangement.SpaceBetween) {
-//                                Text(
-//                                    "Мой аккаунт"
-//                                )
-//                            }
-//
-//                        },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = {
-//                            Icon(
-//                                Icons.Filled.AccountCircle,
-//                                "Мой Аккаунт",
-//                                modifier = Modifier.padding(start = 8.dp)
-//                            )
-//                        },
-//                        colors = NavigationDrawerItemDefaults.colors(
-//                            unselectedContainerColor = MainColor.AppColor.value,
-//                            unselectedTextColor = Color.White,
-//                            unselectedIconColor = Color.White,
-//                        )
-//                    )
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("Главная", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = { Icon(Icons.Filled.Home, "Главная") },
-//                        colors = ItemColors
-//                    )
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("Каталог", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = { Icon(Icons.Filled.Info, "Каталог") },
-//                        colors = ItemColors
-//                    )
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("Избранное", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = { Icon(Icons.Default.Star, "Избранное") },
-//                        colors = ItemColors
-//                    )
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("Моя корзина", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = { Icon(Icons.Filled.ShoppingCart, "Моя корзина") },
-//                        colors = ItemColors
-//                    )
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("Мои заказы", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = { Icon(Icons.Filled.Done, "Мои заказы") },
-//                        colors = ItemColors
-//                    )
-//                }
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .padding(8.dp), verticalArrangement = Arrangement.Bottom
-//                ) {
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("О нас", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = { Icon(Icons.Filled.Info, "О нас") },
-//                        colors = ItemColors
-//                    )
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("Настройки", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = { /*TODO*/ },
-//                        icon = { Icon(Icons.Filled.Settings, "Настройки") },
-//                        colors = ItemColors
-//                    )
-//                }
-//            }
-//
-//        },
-//        scrimColor = Color.LightGray
-//    )
-//}
-//
-
 @Composable
 fun MainNavDrawer(
     drawerState: DrawerState,
@@ -300,7 +43,7 @@ fun MainNavDrawer(
     val scope = rememberCoroutineScope()
 
 
-    val ItemColors = NavigationDrawerItemDefaults.colors(
+    val itemColors = NavigationDrawerItemDefaults.colors(
         unselectedContainerColor = Color.White,
         unselectedTextColor = Color.Black,
         unselectedIconColor = Color.Black,
@@ -328,7 +71,7 @@ fun MainNavDrawer(
                         label = {
                             Row(horizontalArrangement = Arrangement.SpaceBetween) {
                                 Text(
-                                    if (User.Id.id == -1) "Мой аккаунт" else "Мой аккаунт"
+                                    "Мой аккаунт"
                                 )
                             }
                         },
@@ -374,7 +117,7 @@ fun MainNavDrawer(
                             }
                         },
                         icon = { Icon(Icons.Filled.Home, "Главная") },
-                        colors = ItemColors
+                        colors = itemColors
                     )
                     NavigationDrawerItem(
                         modifier = Modifier.padding(8.dp),
@@ -393,7 +136,7 @@ fun MainNavDrawer(
                             }
                         },
                         icon = { Icon(Icons.Filled.Info, "Каталог") },
-                        colors = ItemColors
+                        colors = itemColors
                     )
                     NavigationDrawerItem(
                         modifier = Modifier.padding(8.dp),
@@ -404,7 +147,6 @@ fun MainNavDrawer(
                                 navController.navigate(Screens.LoginScreens.route)
                             } else {
                                 navController.navigate(Screens.FavouriteProductScreens.route) {
-
                                     launchSingleTop = true
                                 }
                                 scope.launch {
@@ -413,7 +155,7 @@ fun MainNavDrawer(
                             }
                         },
                         icon = { Icon(Icons.Default.Star, "Избранное") },
-                        colors = ItemColors
+                        colors = itemColors
                     )
                     NavigationDrawerItem(
                         modifier = Modifier.padding(8.dp),
@@ -432,7 +174,7 @@ fun MainNavDrawer(
                             }
                         },
                         icon = { Icon(Icons.Filled.ShoppingCart, "Моя корзина") },
-                        colors = ItemColors
+                        colors = itemColors
                     )
                     NavigationDrawerItem(
                         modifier = Modifier.padding(8.dp),
@@ -451,28 +193,9 @@ fun MainNavDrawer(
                             }
                         },
                         icon = { Icon(Icons.Filled.Done, "Мои заказы") },
-                        colors = ItemColors
+                        colors = itemColors
                     )
                 }
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .padding(8.dp), verticalArrangement = Arrangement.Bottom
-//                ) {
-//                    NavigationDrawerItem(
-//                        modifier = Modifier.padding(8.dp),
-//                        label = { Text("О нас", fontSize = 20.sp) },
-//                        selected = false,
-//                        onClick = {
-//                            navController.navigate(Screens.AboutUsScreens.route)
-//                            scope.launch {
-//                                drawerState.close()
-//                            }
-//                        },
-//                        icon = { Icon(Icons.Filled.Info, "О нас") },
-//                        colors = ItemColors
-//                    )
-//                }
             }
 
         },

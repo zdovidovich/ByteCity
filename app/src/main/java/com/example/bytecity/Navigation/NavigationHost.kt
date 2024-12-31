@@ -13,8 +13,8 @@ import com.example.bytecity.model.Category
 import com.example.bytecity.model.Screens
 import com.example.bytecity.view.AccountPage.AccountPage
 import com.example.bytecity.view.AllOrderPage.AllOrderPage
+import com.example.bytecity.view.AllOrderPage.CategoryPage.CategoryList
 import com.example.bytecity.view.CartPage.CartPreScreen
-import com.example.bytecity.view.CategoryPage.CategoryList
 import com.example.bytecity.view.FavouritePage.FavouritePreScreen
 import com.example.bytecity.view.ListProductsPage.ListProductPage
 import com.example.bytecity.view.LoginAndRegistrationPages.LoginPage

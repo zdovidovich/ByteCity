@@ -21,6 +21,11 @@ data class Product(
 
         companion object{
 
+
+            /*
+            * resultSet must contain table with Product and Discount(LEFT JOIN)
+            *
+            * */
             fun parse(resultSetProduct: ResultSet): Product {
                 var discountValue = resultSetProduct.getDouble("value")
                 if (resultSetProduct.wasNull()) discountValue = 0.0

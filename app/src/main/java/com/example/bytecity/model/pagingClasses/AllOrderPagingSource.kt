@@ -4,50 +4,28 @@ import android.content.Context
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.bytecity.businessClasses.Order
-import com.example.bytecity.businessClasses.Product
-import com.example.bytecity.businessClasses.ProductForCart
 import com.example.bytecity.model.DbConnection
 import com.example.bytecity.model.DbHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.ResultSet
 
-class AllOrderPagingSource(private val context: Context): PagingSource<Int, Order>() {
+class AllOrderPagingSource(private val context: Context) : PagingSource<Int, Order>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Order> {
         val page = params.key ?: 0
         val pageSize = params.loadSize
         val orders: MutableList<Order> = mutableListOf()
         var resultSetOrdersId: ResultSet? = null
-        var resultSetOrderDetails: List<ResultSet?> = listOf()
-        var resultSetOrderProducts: List<ResultSet?> = listOf()
-
+        var connection: DbConnection? = null
         return try {
             withContext(Dispatchers.IO) {
-                val connection = DbConnection()
-                connection.connect(context)
-                resultSetOrdersId = DbHelper.getOrdersId(pageSize, page * pageSize, connection)
-                resultSetOrderDetails = DbHelper.getOrderDetails(resultSetOrdersId!!, pageSize, page * pageSize, connection)
-                resultSetOrdersId?.close()
-                resultSetOrdersId = DbHelper.getOrdersId(pageSize, page * pageSize, connection)
-                resultSetOrderProducts = DbHelper.getOrderProducts(resultSetOrdersId!!, pageSize, page * pageSize, connection)
-                for (i in resultSetOrderDetails.indices) {
-                    resultSetOrderDetails[i]?.next()
-                    val status = resultSetOrderDetails[i]?.getString("status")
-                    val registrationDate = resultSetOrderDetails[i]?.getDate("registrationDate")
-                    val productsTemp = mutableListOf<ProductForCart>()
-                    while(resultSetOrderProducts[i]?.next()!!){
-                        val resultSetProduct = DbHelper.getProductById(resultSetOrderProducts[i]?.getInt("idProduct")!!, pageSize, page * pageSize, connection)
-                        resultSetProduct.next()
-                        val product = Product.parse(resultSetProduct)
-
-                        val qty = resultSetOrderProducts[i]?.getInt("quantity")!!
-                        productsTemp.add(ProductForCart(product, qty))
-                        resultSetProduct.close()
-                    }
-                    orders.add(Order(products= productsTemp, status = status!!, registrationDate = registrationDate!!))
-                }
-
+                connection = DbConnection()
+                connection?.connect(context)
+            }
+            resultSetOrdersId = DbHelper.getOrdersId(pageSize, page * pageSize, connection!!)
+            while (resultSetOrdersId.next()) {
+                orders.add(Order.parse(resultSetOrdersId, connection!!))
             }
             LoadResult.Page(
                 data = orders,
@@ -57,15 +35,13 @@ class AllOrderPagingSource(private val context: Context): PagingSource<Int, Orde
         } catch (ex: Exception) {
             LoadResult.Error(ex) // smth's bad
         } finally {
+            withContext(Dispatchers.IO) {
+                connection?.connection?.close()
+            }
             resultSetOrdersId?.close()
-            for (i in resultSetOrderDetails) {
-                i?.close()
-            }
-            for (i in resultSetOrderProducts) {
-                i?.close()
-            }
         }
     }
+
 
     override fun getRefreshKey(state: PagingState<Int, Order>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
