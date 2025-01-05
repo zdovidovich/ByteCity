@@ -40,7 +40,7 @@ fun TopBar(navIcon: @Composable () -> Unit) {
             ) {
                 Text(
                     "ByteCity",
-                    fontSize = 32.sp,
+                    fontSize = 30.sp,
                     fontFamily = FontFamily.Serif,
                     fontStyle = FontStyle.Italic
                 )
